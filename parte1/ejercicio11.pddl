@@ -1,21 +1,23 @@
 (define (domain logisticaSE)
 
-;remove requirements that are not needed
 (:requirements :strips :fluents :durative-actions :timed-initial-literals :typing :conditional-effects :negative-preconditions :duration-inequalities :equality)
 
-(:types ;todo: enumerate types and their hierarchy here, e.g. car truck bus - vehicle
+(:types 
+    persona loc caja tipocaja- objects
 )
 
-; un-comment following line if constants are needed
-;(:constants )
-
-(:predicates ;todo: define predicates here
+(:predicates 
+    (persona-herida ?p-persona ?l-loc)
+    (caja-en-loc ?c-caja ?l-loc)
+    (caja-tipo ?c-caja ?tc-tipocaja)
+    (persona-tiene-contenido ?p-persona ?tc-tipocaja)
+    (persona-tiene-caja ?p-persona ?c-caja)
+    (caja-en-deposito ?c-caja ?l-loc)
+    ()
 )
 
 
-(:functions ;todo: define numeric functions here
+(:functions 
 )
-
-;define actions here
 
 )
