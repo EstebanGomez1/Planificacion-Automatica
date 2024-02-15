@@ -1,4 +1,4 @@
-(define (problem ejercicio_problem) (:domain logisticaSE)
+(define (problem problemaBasico1) (:domain logisticaSE)
 (:objects 
     persona1 - persona
     caja1 - caja
