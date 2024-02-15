@@ -13,9 +13,6 @@
     (persona-tiene-contenido ?p - persona ?cont - contenido) ;la persona tiene ya un contenido
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
-    (caja-en-deposito ?c - caja) ;caja en el deposito
-    (dron-en-deposito ?d - dron) ;dron en el deposito
-    (dron-out-deposito ?d - dron) ;dron fuera del desposito
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
     (carry-caja ?d - dron ?b - brazo ?c -caja) ;el dron lleva una caja con un brazo
     (brazo-dron-free ?d - dron ?b - brazo) ;esta libre un brazo del dron
@@ -26,7 +23,6 @@
     :parameters ( ?d - dron ?A - loc ?B - loc)
     :precondition (and 
         (loc-dron ?d ?A)
-        (dron-out-deposito ?d)
     )
     :effect (and 
         (loc-dron ?d ?B)
@@ -34,40 +30,17 @@
     )
 )
 
-(:action enter-deposito-dron
-    :parameters (?d - dron )
-    :precondition (and 
-        (dron-out-deposito ?d)
-    )
-    :effect (and 
-        (dron-en-deposito ?d)
-        (not (dron-out-deposito ?d))
-    )
-)
-
-(:action exit-deposito-dron
-    :parameters ( ?d - dron)
-    :precondition (and 
-        (dron-en-deposito ?d)
-    )
-    :effect (and 
-        (dron-out-deposito ?d)
-        (not (dron-en-deposito ?d))
-    )
-)
-
-
 
 
 (:action take-caja
-    :parameters ( ?c - caja ?d - dron ?br - brazo )
+    :parameters ( ?c - caja ?d - dron ?br - brazo ?l - loc)
     :precondition (and
-        (caja-en-deposito ?c)
-        (dron-en-deposito ?d)
+        (loc-caja ?c ?l)
+        (loc-dron ?d ?l)
         (brazo-dron-free ?d ?br)
     )
     :effect (and 
-        (not (caja-en-deposito ?c))
+        (not (loc-caja ?c ?l))
         (carry-caja ?d ?br ?c)
         (not (brazo-dron-free ?d ?br))
     )
@@ -88,6 +61,7 @@
         (brazo-dron-free ?d ?br)
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
+        (not (persona-necesita-contenido ?p ?cont))
     )
 )
 
