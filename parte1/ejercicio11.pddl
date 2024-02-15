@@ -21,17 +21,6 @@
 )
 
 
-(:action move-caja
-    :parameters ( ?c -caja ?d - dron ?br -brazo ?l -loc)
-    :precondition (and 
-        (carry-caja ?d ?br ?c)
-        (loc-caja ?d)
-    )
-    :effect (and 
-        (loc-dron ?l)  
-    )
-)
-
 (:action move-dron
     :parameters ( ?d - dron ?A - loc ?B - loc)
     :precondition (and 
