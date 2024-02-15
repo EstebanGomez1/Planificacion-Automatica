@@ -15,6 +15,7 @@
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
     (caja-en-deposito ?c - caja) ;caja en el deposito
     (dron-en-deposito ?d - dron) ;dron en el deposito
+    (dron-out-deposito ?d - dron) ;dron fuera del desposito
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
     (carry-caja ?d - dron ?b - brazo ?c -caja) ;el dron lleva una caja con un brazo
     (brazo-dron-free ?d - dron ?b - brazo) ;esta libre un brazo del dron
@@ -25,11 +26,37 @@
     :parameters ( ?d - dron ?A - loc ?B - loc)
     :precondition (and 
         (loc-dron ?d ?A)
+        (dron-out-deposito ?d)
     )
     :effect (and 
         (loc-dron ?d ?B)
+        ( not(loc-dron ?d ?A))
     )
 )
+
+(:action enter-deposito-dron
+    :parameters (?d - dron )
+    :precondition (and 
+        (dron-out-deposito ?d)
+    )
+    :effect (and 
+        (dron-en-deposito ?d)
+        (not (dron-out-deposito ?d))
+    )
+)
+
+(:action exit-deposito-dron
+    :parameters ( ?d - dron)
+    :precondition (and 
+        (dron-en-deposito ?d)
+    )
+    :effect (and 
+        (dron-out-deposito ?d)
+        (not (dron-en-deposito ?d))
+    )
+)
+
+
 
 
 (:action take-caja
@@ -41,7 +68,6 @@
     )
     :effect (and 
         (not (caja-en-deposito ?c))
-        (loc-caja ?c ?d)
         (carry-caja ?d ?br ?c)
         (not (brazo-dron-free ?d ?br))
     )
@@ -53,7 +79,6 @@
         (persona-necesita-contenido ?p ?cont)
         (caja-contenido ?c ?cont)
         (loc-dron ?d ?l)
-        (loc-caja ?c ?d)
         (carry-caja ?d ?br ?c)
         (loc-persona ?p ?l)
     )
