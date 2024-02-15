@@ -1,19 +1,23 @@
 (define (domain logisticaSE)
 
-(:requirements :strips :fluents :durative-actions :timed-initial-literals :typing :conditional-effects :negative-preconditions :duration-inequalities :equality)
+(:requirements :strips :typing)
 
 (:types 
-    persona loc caja tipocaja- objects
+    persona loc caja contenido dron brazo- objects
 )
 
 (:predicates 
-    (persona-herida ?p-persona ?l-loc)
-    (caja-en-loc ?c-caja ?l-loc)
-    (caja-tipo ?c-caja ?tc-tipocaja)
-    (persona-tiene-contenido ?p-persona ?tc-tipocaja)
-    (persona-tiene-caja ?p-persona ?c-caja)
-    (caja-en-deposito ?c-caja ?l-loc)
-    ()
+    (loc-persona ?p - persona ?l - loc) ;localizacion de una persona herida
+    (loc-caja ?c - caja ?l - loc) ;localizacion de una caja
+    (caja-contenido ?c - caja ?cont - contenido) ;contenido de una caja
+    (persona-tiene-contenido ?p - persona ?cont - contenido) ;la persona tiene ya un contenido
+    (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
+    (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
+    (caja-en-deposito ?c - caja) ;caja en el deposito
+    (loc-dron ?l - loc) ;localizacion del dron
+    (carry-caja ?d - dron ?b - brazo ?c -caja) ;el dron lleva una caja con un brazo
+    (caja-free ?c - caja) ;esta libre la caja
+    (brazo-dron-free ?d - dron ?b - brazo) ;esta libre un brazo del dron
 )
 
 
