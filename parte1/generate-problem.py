@@ -219,17 +219,17 @@ def main():
     carrier = []
     loc = []
 
-    location.append("deposito")
+    loc.append("deposito")
     for x in range(options.locations):
-        location.append(str(char(x + 33)))
+        loc.append(str(chr(x + 65)))
     for x in range(options.drones):
-        drone.append("dron" + str(x + 1))
+        dron.append("dron" + str(x + 1))
     for x in range(options.carriers):
         carrier.append("carrier" + str(x + 1))
     for x in range(options.persons):
-        person.append("persona" + str(x + 1))
+        persona.append("persona" + str(x + 0))
     for x in range(options.crates):
-        crate.append("caja" + str(x + 1))
+        caja.append("caja" + str(x + 1))
     
     # Determine the set of crates for each content.
     # If content_types[0] is "food",
@@ -245,7 +245,7 @@ def main():
     # Determine which types of content each person needs.
     # If person[0] is "person0",
     # and content_types[1] is "medicine",
-    # then needs[0][1] is true iff person0 needs medicine.
+    # then needs[0][1] is true if person0 needs medicine.
     need = setup_person_needs(options, crates_with_contents)
 
     # Define a problem name
@@ -257,8 +257,8 @@ def main():
     with open(problem_name + ".pddl", 'w') as f:
         # Write the initial part of the problem
 
-        f.write("(define (problem " + problem_name + ")\n")
-        f.write("(:domain drone-domain)\n")
+        f.write("(define (problem " + problem_name + ")")
+        f.write("(:domain logisticaSE)\n")
         f.write("(:objects\n")
 
         ######################################################################
@@ -267,24 +267,24 @@ def main():
         # TODO: Change the type names below (drone, location, ...)
         # to suit your domain.
 
-        for x in drone:
+        for x in dron:
             f.write("\t" + x + " - dron\n")
 
-        for x in location:
+        for x in loc:
             f.write("\t" + x + " - loc\n")
 
-        for x in crate:
+        for x in caja:
             f.write("\t" + x + " - caja\n")
 
         for x in content_types:
             f.write("\t" + x + " - contenido\n")
 
-        for x in person:
+        for x in persona:
             f.write("\t" + x + " - persona\n")
 
         for x in carrier:
             f.write("\t" + x + " - carrier\n") #no sé si nos hace falta
-
+        f.write("\tbrazo1 - brazo\n\tbrazo2 - brazo")
         f.write(")\n")
 
         ######################################################################
@@ -294,26 +294,30 @@ def main():
 
         # TODO: Initialize all facts here!
             
-            #localizacion del dron 
-            localizacion_dron = random.choice(location)
-            f.write(f"\t(loc-dron dron1 {localizacion_dron})")
+        #localizacion del dron 
+        localizacion_dron = random.choice(loc)
+        f.write(f"\t(loc-dron dron1 {localizacion_dron})\n")
 
-            #localizacion de personas y contenidos 
-            for i in persona:
-                contenido = random.choice(contenido)
-                localizacion = random.choice(location)
-                f.write(f"\t(persona-necesita-contenido {i} {contenido})\n"); 
-                f.write(f"\t(persona-necesita-contenido {i} {contenido})\n"); 
+        #localizacion de personas, cajas y contenidos 
+        #contenido = random.choice(content_types)
+        j=1
+        for x in range(options.persons):
+            for y in range(len(content_types)):
+                if need[x][y]:
+                    localizacion = random.choice(loc)
+                    localizacion_caja = random.choice(loc)
+                    person_name = persona[x]
+                    content_name = content_types[y]
+                    print(need[x][y], person_name, content_name)
+                    f.write(f"\t(persona-necesita-contenido persona{x} {content_name})\n") 
+                    f.write(f"\t(loc-persona persona{x} {localizacion})\n")
+                    f.write(f"\t(caja-contenido caja{j} {content_name})\n")
+                    f.write(f"\t(loc-caja caja{j} {localizacion_caja})\n")
+                    j+=1
 
-            #localizacion cajas y su contenido
-            for i in caja:
-                localizacion = random.choice(location)
-                contenido = random.choice(contenido)
-                f.write(f"\t(loc-caja {i} {localizacion})\n")
-                f.write(f"\t(caja-contenido {i} {contenido})\n")
-            
-            f.write(f"(brazo1-dron-free dron1 brazo1)\n(brazo2-dron-free dron1 brazo2)\n")
-            
+        f.write(f"\t(brazo-dron-free dron1 brazo1)")
+        f.write(f"\n\t(brazo-dron-free dron1 brazo2)\n")
+        
             
         f.write(")\n")
 
@@ -323,23 +327,27 @@ def main():
         f.write("(:goal (and\n")
 
         # All Drones should end up at the depot
-        for x in drone:
+        for x in dron:
             f.write("\n")
             # TODO: Write a goal that the drone x is at the depot
-            f.write("\t(loc-dron dron1 deposito")
+            f.write("\t(loc-dron dron1 deposito)\n")
         
         for x in range(options.persons):
             for y in range(len(content_types)):
-                if need[x][y]:
-                    person_name = person[x]
+                if need[x][y]==True:
+                    person_name = persona[x]
                     content_name = content_types[y]
-                    # TODO: write a goal that the person needs a crate
-                    # with this specific content
-                    f.write(f"(persona-tiene-contenido {person_name} {content_name})")
+                    f.write(f"\t(persona-tiene-contenido {person_name} {content_name})\n")
+                else: continue
 
         f.write("\t))\n")
         f.write(")\n")
 
-
+    for x in range(options.persons):
+            for y in range(len(content_types)):
+                person_name = persona[x]
+                content_name = content_types[y]
+                print(need[x][y], person_name, content_name)
+                
 if __name__ == '__main__':
     main()
