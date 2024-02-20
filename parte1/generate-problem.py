@@ -218,10 +218,12 @@ def main():
     caja = []
     carrier = []
     loc = []
-
+    y=65
     loc.append("deposito")
     for x in range(options.locations):
-        loc.append(str(chr(x + 65)))
+        if(x>=26):loc.append(str(chr(x + (y-26))+"0"))
+        else:loc.append(str(chr(x + y)))
+        
     for x in range(options.drones):
         dron.append("dron" + str(x + 1))
     for x in range(options.carriers):
