@@ -17,6 +17,8 @@
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
     (caja-en-transportador ?c - caja ?n - num) ;la caja esta en el transportador con un numero asociado
     (siguiente ?n1 ?n2 - num) ;siguiente del espacio del transportador
+    (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
+    (dron-free ?d - dron) ;el dron esta libre para coger una caja
 )
 
 
@@ -57,11 +59,13 @@
     :precondition (and
         (loc-caja ?c ?l)
         (loc-dron ?d ?l)
+        (dron-free ?d)
 
     )
     :effect (and 
         (not (loc-caja ?c ?l))
-
+        (not (dron-free ?d))
+        (caja-cogida ?c ?d)
 
     )
 )
@@ -72,13 +76,13 @@
         (persona-necesita-contenido ?p ?cont)
         (caja-contenido ?c ?cont)
         (loc-dron ?d ?l)
-        (carry-caja ?d ?br ?c)
         (loc-persona ?p ?l)
+        (caja-cogida ?c ?d)
     )
     :effect (and 
         (loc-caja ?c ?l)
-        (not (carry-caja ?d ?br ?c))
-        (brazo-dron-free ?d ?br)
+        (not (caja-cogida ?c ?d))
+        (dron-free ?d)
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
         (not (persona-necesita-contenido ?p ?cont))
