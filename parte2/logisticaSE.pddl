@@ -3,7 +3,8 @@
 (:requirements :strips :typing)
 
 (:types 
-    persona loc caja contenido dron brazo- objects
+    persona loc caja contenido dron transportador num - objects
+
 )
 
 (:predicates 
@@ -14,8 +15,8 @@
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
-    (carry-caja ?d - dron ?b - brazo ?c -caja) ;el dron lleva una caja con un brazo
-    (brazo-dron-free ?d - dron ?b - brazo) ;esta libre un brazo del dron
+    (caja-en-transportador ?c - caja ?n - num) ;la caja esta en el transportador con un numero asociado
+    (siguiente ?n1 ?n2 - num) ;siguiente del espacio del transportador
 )
 
 
@@ -30,19 +31,38 @@
     )
 )
 
+(:action poner-caja-transportador
+    :parameters ()
+    :precondition (and )
+    :effect (and )
+)
+
+(:action mover-transportador
+    :parameters ()
+    :precondition (and )
+    :effect (and )
+)
+
+(:action coger-caja-transportador
+    :parameters ()
+    :precondition (and )
+    :effect (and )
+)
+
+
 
 
 (:action take-caja
-    :parameters ( ?c - caja ?d - dron ?br - brazo ?l - loc)
+    :parameters ( ?c - caja ?d - dron ?l - loc)
     :precondition (and
         (loc-caja ?c ?l)
         (loc-dron ?d ?l)
-        (brazo-dron-free ?d ?br)
+
     )
     :effect (and 
         (not (loc-caja ?c ?l))
-        (carry-caja ?d ?br ?c)
-        (not (brazo-dron-free ?d ?br))
+
+
     )
 )
 
@@ -64,5 +84,6 @@
         (not (persona-necesita-contenido ?p ?cont))
     )
 )
+
 
 )
