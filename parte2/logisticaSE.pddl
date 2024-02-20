@@ -34,6 +34,7 @@
     :parameters ( ?d - dron ?A - loc ?B - loc)
     :precondition (and 
         (loc-dron ?d ?A)
+        (dron-free ?d)
     )
     :effect (and 
         (loc-dron ?d ?B)
