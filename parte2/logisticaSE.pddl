@@ -1,6 +1,6 @@
 (define (domain logisticaSE)
 
-(:requirements :strips :typing)
+(:requirements :strips :typing :fluents)
 
 (:types 
     persona loc caja contenido dron transportador num - objects
@@ -15,10 +15,18 @@
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
-    (caja-en-transportador ?c - caja ?n - num) ;la caja esta en el transportador con un numero asociado
-    (siguiente ?n1 ?n2 - num) ;siguiente del espacio del transportador
+    ;(siguiente ?n1 ?n2 - num ?t - transportador) ;siguiente del espacio del transportador
     (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
     (dron-free ?d - dron) ;el dron esta libre para coger una caja
+    (loc-transportador ?t - transportador ?l - loc)
+    (caja-en-transportador ?c - caja ?t - transportador )
+    ;(espacio-free ?n - num ?t - transportador) ;el espacio en el transportador esta libre
+)
+
+(:functions
+    (capacidad-max ?t - transportador) ;empieza en 4 espacios maximos
+    (carga-actual ?t - transportador) ;empezara en 0 y cambiara a lo largo de las acciones
+    (espacio-ocupa-caja ?c - caja) ;una caja ocupa 1 espacio
 )
 
 
@@ -34,25 +42,49 @@
 )
 
 (:action poner-caja-transportador
-    :parameters ()
-    :precondition (and )
-    :effect (and )
+    :parameters (
+        ?c - caja ?t - transportador ?d - dron ?l - loc    
+    )
+    :precondition (and 
+        (< (carga-actual ?t) (capacidad-max ?t))
+        (caja-cogida ?c ?d)
+        (loc-dron ?d ?l)
+        (loc-transportador ?t ?l)
+    )
+    :effect (and 
+        (increase (carga-actual ?t) (espacio-ocupa-caja ?c))
+        (not (caja-cogida ?c ?d))
+        (caja-en-transportador ?c ?t )
+    )
 )
 
-(:action mover-transportador
-    :parameters ()
-    :precondition (and )
-    :effect (and )
+(:action move-transportador
+    :parameters ( ?t - transportador ?A - loc ?B - loc)
+    :precondition (and 
+        (loc-transportador ?t ?A)
+    )
+    :effect (and 
+        (loc-transportador ?t ?B)
+        ( not(loc-transportador ?t ?A))
+    )
 )
 
-(:action coger-caja-transportador
-    :parameters ()
-    :precondition (and )
-    :effect (and )
+(:action take-caja-transportador
+    :parameters (
+        ?c - caja ?t - transportador ?d - dron ?l - loc
+    )
+    :precondition (and 
+        (dron-free ?d)
+        (caja-en-transportador ?c ?t )
+        (loc-dron ?d ?l)
+        (loc-transportador ?t ?l)
+    )
+    :effect (and 
+        (caja-cogida ?c ?d)
+        (not (dron-free ?d))
+        (decrease (carga-actual ?t) (espacio-ocupa-caja ?c))
+    )
 )
-
-
-
 
 (:action take-caja
     :parameters ( ?c - caja ?d - dron ?l - loc)
@@ -71,7 +103,7 @@
 )
 
 (:action drop-caja
-    :parameters ( ?c - caja ?d - dron ?br -brazo ?cont - contenido ?p - persona ?l - loc)
+    :parameters ( ?c - caja ?d - dron ?cont - contenido ?p - persona ?l - loc)
     :precondition (and 
         (persona-necesita-contenido ?p ?cont)
         (caja-contenido ?c ?cont)
