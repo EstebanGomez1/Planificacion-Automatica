@@ -15,19 +15,16 @@
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
-    ;(siguiente ?n1 ?n2 - num ?t - transportador) ;siguiente del espacio del transportador
+    (siguiente ?n1 ?n2 - num ?t - transportador) ;siguiente del espacio del transportador
     (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
     (dron-free ?d - dron) ;el dron esta libre para coger una caja
     (loc-transportador ?t - transportador ?l - loc)
     (caja-en-transportador ?c - caja ?t - transportador )
-    ;(espacio-free ?n - num ?t - transportador) ;el espacio en el transportador esta libre
+    (capacidad-actual ?t - transportador ?n - num)
 )
 
-(:functions
-    (capacidad-max ?t - transportador) ;empieza en 4 espacios maximos
-    (carga-actual ?t - transportador) ;empezara en 0 y cambiara a lo largo de las acciones
-    (espacio-ocupa-caja ?c - caja) ;una caja ocupa 1 espacio
-)
+
+
 
 
 (:action move-dron
@@ -44,16 +41,18 @@
 
 (:action poner-caja-transportador
     :parameters (
-        ?c - caja ?t - transportador ?d - dron ?l - loc    
+        ?c - caja ?t - transportador ?d - dron ?l - loc  ?nAnterior ?nPosterior - num 
     )
     :precondition (and 
-        (< (carga-actual ?t) (capacidad-max ?t))
+        (siguiente ?nAnterior ?nPosterior ?t)
         (caja-cogida ?c ?d)
         (loc-dron ?d ?l)
         (loc-transportador ?t ?l)
+        (capacidad-actual ?t ?nAnterior)
     )
     :effect (and 
-        (increase (carga-actual ?t) (espacio-ocupa-caja ?c))
+        (not(capacidad-actual ?t ?nAnterior))
+        (capacidad-actual ?t ?nPosterior)
         (not (caja-cogida ?c ?d))
         (caja-en-transportador ?c ?t )
     )
@@ -70,20 +69,24 @@
     )
 )
 
+
 (:action take-caja-transportador
     :parameters (
-        ?c - caja ?t - transportador ?d - dron ?l - loc
+        ?c - caja ?t - transportador ?d - dron ?l - loc ?nAnterior ?nPosterior - num
     )
     :precondition (and 
         (dron-free ?d)
         (caja-en-transportador ?c ?t )
         (loc-dron ?d ?l)
         (loc-transportador ?t ?l)
+        (siguiente ?nAnterior ?nPosterior ?t)
+        (capacidad-actual ?t ?nPosterior)
     )
     :effect (and 
         (caja-cogida ?c ?d)
         (not (dron-free ?d))
-        (decrease (carga-actual ?t) (espacio-ocupa-caja ?c))
+        (capacidad-actual ?t ?nAnterior)
+        (not (capacidad-actual ?t ?nPosterior) )
     )
 )
 
@@ -122,5 +125,10 @@
     )
 )
 
-
 )
+
+
+
+
+
+

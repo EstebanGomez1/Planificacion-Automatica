@@ -6,6 +6,7 @@
     A B C D deposito - loc
     dron1 - dron
     transportador1 - transportador
+    n0 n1 n2 n3 n4 - num
 )
 
 (:init
@@ -14,12 +15,13 @@
     (loc-persona persona1 B)
     (loc-dron dron1 deposito)
     (caja-contenido caja1 comida)
-    (loc-transportador transportador1 C)
+    (loc-transportador transportador1 deposito)
     (dron-free dron1)
-    (= (espacio-ocupa-caja caja1) 1)
-    (= (capacidad-max transportador1) 4)
-    (= (carga-actual transportador1) 0)
-
+    (siguiente n0 n1 transportador1)
+    (siguiente n1 n2 transportador1)
+    (siguiente n2 n3 transportador1)
+    (siguiente n3 n4 transportador1)
+    (capacidad-actual transportador1 n0)
 )
 
 (:goal (and
