@@ -221,8 +221,7 @@ def main():
     y=65
     loc.append("deposito")
     for x in range(options.locations):
-        if(x>=26):loc.append(str(chr(x + (y-26))+"0"))
-        else:loc.append(str(chr(x + y)))
+        loc.append("Loc"+str(x+1))
         
     for x in range(options.drones):
         dron.append("dron" + str(x + 1))
@@ -307,7 +306,7 @@ def main():
             for y in range(len(content_types)):
                 if need[x][y]:
                     localizacion = random.choice(loc)
-                    localizacion_caja = random.choice(loc)
+                    localizacion_caja = loc[0]
                     person_name = persona[x]
                     content_name = content_types[y]
                     print(need[x][y], person_name, content_name)
@@ -316,7 +315,7 @@ def main():
                     f.write(f"\t(caja-contenido caja{j} {content_name})\n")
                     f.write(f"\t(loc-caja caja{j} {localizacion_caja})\n")
                     j+=1
-
+                    
         f.write(f"\t(brazo-dron-free dron1 brazo1)")
         f.write(f"\n\t(brazo-dron-free dron1 brazo2)\n")
         
