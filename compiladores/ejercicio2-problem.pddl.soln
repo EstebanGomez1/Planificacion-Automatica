@@ -1,0 +1,11 @@
+
+; Time 0.00
+; ParsingTime 0.00
+; NrActions 4
+; MakeSpan
+; MetricValue
+
+	 0.010:  (TAKE-CAJA B)[0.000]
+	 0.020:  (DROP-CAJA-ON-CAJA B C)[0.000]
+	 0.030:  (TAKE-CAJA A)[0.000]
+	 0.040:  (DROP-CAJA-ON-CAJA A B)[0.000]

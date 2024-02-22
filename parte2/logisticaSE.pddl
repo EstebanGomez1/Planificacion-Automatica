@@ -1,6 +1,6 @@
 (define (domain logisticaSE)
 
-(:requirements :strips :typing :fluents)
+(:requirements :strips :typing )
 
 (:types 
     persona loc caja contenido dron transportador num - objects
@@ -44,7 +44,7 @@
         ?c - caja ?t - transportador ?d - dron ?l - loc  ?nAnterior ?nPosterior - num 
     )
     :precondition (and 
-        (siguiente ?nAnterior ?nPosterior ?t)
+        (siguiente ?nAnterior ?nPosterior)
         (caja-cogida ?c ?d)
         (loc-dron ?d ?l)
         (loc-transportador ?t ?l)

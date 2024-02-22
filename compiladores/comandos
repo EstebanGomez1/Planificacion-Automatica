@@ -1,0 +1,14 @@
+uso de compiladores
+
+ff
+./ff -o ../ejercicio2.pddl -f ../ejercicio2-problem.pddl
+
+lpg-td
+./lpg-td -o ../ejercicio2.pddl -f ../ejercicio2-problem.pddl -n 1
+
+sgplan40
+./sgplan40 -o ../ejercicio2.pddl -f ../ejercicio2-problem.pddl 
+
+
+
+
