@@ -28,7 +28,7 @@
 
 
 (:action move-dron-transportador
-    :parameters ( ?d - dron ?A - loc ?B - loc ?t - transportador)
+    :parameters ( ?d - dron ?t - transportador ?A - loc ?B - loc )
     :precondition (and 
         (loc-dron ?d ?A)
         (dron-free ?d)
