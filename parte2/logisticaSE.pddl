@@ -6,7 +6,7 @@
     persona loc caja contenido dron transportador num - objects
 
 )
-
+ 
 (:predicates 
     (loc-persona ?p - persona ?l - loc) ;localizacion de una persona herida
     (loc-caja ?c - caja ?l - loc) ;localizacion de una caja
@@ -15,7 +15,7 @@
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
     (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
-    (siguiente ?n1 ?n2 - num ?t - transportador) ;siguiente del espacio del transportador
+    (siguiente ?n1 ?n2 - num ) ;siguiente del espacio del transportador
     (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
     (dron-free ?d - dron) ;el dron esta libre para coger una caja
     (loc-transportador ?t - transportador ?l - loc)
@@ -27,15 +27,18 @@
 
 
 
-(:action move-dron
-    :parameters ( ?d - dron ?A - loc ?B - loc)
+(:action move-dron-transportador
+    :parameters ( ?d - dron ?A - loc ?B - loc ?t - transportador)
     :precondition (and 
         (loc-dron ?d ?A)
         (dron-free ?d)
+        (loc-transportador ?t ?A)
     )
     :effect (and 
         (loc-dron ?d ?B)
         ( not(loc-dron ?d ?A))
+        (loc-transportador ?t ?B)
+        ( not(loc-transportador ?t ?A))
     )
 )
 
@@ -55,17 +58,7 @@
         (capacidad-actual ?t ?nPosterior)
         (not (caja-cogida ?c ?d))
         (caja-en-transportador ?c ?t )
-    )
-)
-
-(:action move-transportador
-    :parameters ( ?t - transportador ?A - loc ?B - loc)
-    :precondition (and 
-        (loc-transportador ?t ?A)
-    )
-    :effect (and 
-        (loc-transportador ?t ?B)
-        ( not(loc-transportador ?t ?A))
+        (dron-free ?d)
     )
 )
 
@@ -79,7 +72,7 @@
         (caja-en-transportador ?c ?t )
         (loc-dron ?d ?l)
         (loc-transportador ?t ?l)
-        (siguiente ?nAnterior ?nPosterior ?t)
+        (siguiente ?nAnterior ?nPosterior )
         (capacidad-actual ?t ?nPosterior)
     )
     :effect (and 
