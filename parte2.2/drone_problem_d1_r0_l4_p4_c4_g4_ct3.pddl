@@ -1,4 +1,4 @@
-(define (problem drone_problem_d1_r0_l4_p4_c4_g4_ct3)(:domain logisticaSE_ejercicio2)
+(define (problem drone_problem_d1_r0_l4_p4_c4_g4_ct3)(:domain logisticaSE)
 (:objects
 	dron1 - dron
 	transportador1 - transportador
