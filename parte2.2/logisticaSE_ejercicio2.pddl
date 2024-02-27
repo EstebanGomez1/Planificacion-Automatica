@@ -1,9 +1,9 @@
 (define (domain logisticaSE)
 
-(:requirements :strips :typing )
+(:requirements :fluents :strips :typing :action-costs); añado :action-costs y fluents
 
 (:types 
-    persona loc caja contenido dron transportador num - objects
+    persona loc caja contenido dron transportador num total_cost- objects
 
 )
  
@@ -23,7 +23,10 @@
     (capacidad-actual ?t - transportador ?n - num)
 )
 
-
+(:functions
+    (total-cost)
+    (fly-cost ?L1 - loc ?l2 - loc);funciones usando fluents
+)
 
 
 
@@ -39,6 +42,8 @@
         ( not(loc-dron ?d ?A))
         (loc-transportador ?t ?B)
         ( not(loc-transportador ?t ?A))
+        ;Incrementar total-cost basándonos en fly-cost entre localizaciones
+        (increase(total-cost)(fly-cost ?A ?B))
     )
 )
 
@@ -59,6 +64,7 @@
         (not (caja-cogida ?c ?d))
         (caja-en-transportador ?c ?t )
         (dron-free ?d)
+        (increase (total-cost) 1);incrementamos total-cost en 1
     )
 )
 
@@ -80,6 +86,7 @@
         (not (dron-free ?d))
         (capacidad-actual ?t ?nAnterior)
         (not (capacidad-actual ?t ?nPosterior) )
+        (increase (total-cost) 1);incrementamos total-cost en 1
     )
 )
 
@@ -95,7 +102,7 @@
         (not (loc-caja ?c ?l))
         (not (dron-free ?d))
         (caja-cogida ?c ?d)
-
+        (increase (total-cost) 1);incrementamos total-cost en 1
     )
 )
 
@@ -115,6 +122,7 @@
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
         (not (persona-necesita-contenido ?p ?cont))
+        (increase (total-cost) 1);incrementamos total-cost en 1
     )
 )
 
