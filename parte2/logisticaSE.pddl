@@ -91,6 +91,7 @@
         (not (dron-free ?d))
         (capacidad-actual ?t ?nAnterior)
         (not (capacidad-actual ?t ?nPosterior) )
+        (not (caja-en-transportador ?c ?t ))
     )
 )
 

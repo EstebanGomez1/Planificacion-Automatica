@@ -1,23 +1,23 @@
 (define (domain logisticaSE)
 
-(:requirements :fluents :strips :typing :action-costs); añado :action-costs y fluents
+(:requirements :fluents :strips :typing :action-costs)
 
 (:types 
-    persona loc caja contenido dron transportador num total_cost- objects
+    persona loc caja contenido dron transportador num - objects
 
 )
  
 (:predicates 
-    (loc-persona ?p - persona ?l - loc) ;localizacion de una persona herida
-    (loc-caja ?c - caja ?l - loc) ;localizacion de una caja
-    (caja-contenido ?c - caja ?cont - contenido) ;contenido de una caja
-    (persona-tiene-contenido ?p - persona ?cont - contenido) ;la persona tiene ya un contenido
-    (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
-    (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
-    (loc-dron ?d - dron ?l - loc) ;localizacion del dron
-    (siguiente ?n1 ?n2 - num ) ;siguiente del espacio del transportador
-    (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
-    (dron-free ?d - dron) ;el dron esta libre para coger una caja
+    (loc-persona ?p - persona ?l - loc) 
+    (loc-caja ?c - caja ?l - loc) 
+    (caja-contenido ?c - caja ?cont - contenido) 
+    (persona-tiene-contenido ?p - persona ?cont - contenido) 
+    (persona-tiene-caja ?p - persona ?c - caja) 
+    (persona-necesita-contenido ?p - persona ?cont -contenido) 
+    (loc-dron ?d - dron ?l - loc) 
+    (siguiente ?n1 ?n2 - num ) 
+    (caja-cogida ?c - caja ?d - dron) 
+    (dron-free ?d - dron) 
     (loc-transportador ?t - transportador ?l - loc)
     (caja-en-transportador ?c - caja ?t - transportador )
     (capacidad-actual ?t - transportador ?n - num)
@@ -25,14 +25,13 @@
 
 (:functions
     (total-cost)
-    (fly-cost ?L1 - loc ?l2 - loc);funciones usando fluents
+    (fly-cost ?L1 - loc ?l2 - loc)
 )
 
 (:action move-dron
     :parameters ( ?d - dron ?A - loc ?B - loc )
     :precondition (and
         (loc-dron ?d ?A)
-        ;(dron-free ?d)
     )
     :effect (and 
         (loc-dron ?d ?B)
@@ -54,7 +53,6 @@
         ( not(loc-dron ?d ?A))
         (loc-transportador ?t ?B)
         ( not(loc-transportador ?t ?A))
-        ;Incrementar total-cost basándonos en fly-cost entre localizaciones
         (increase(total-cost)(fly-cost ?A ?B))
     )
 )
@@ -76,14 +74,14 @@
         (not (caja-cogida ?c ?d))
         (caja-en-transportador ?c ?t )
         (dron-free ?d)
-        (increase (total-cost) 1);incrementamos total-cost en 1
+        (increase (total-cost) 1)
     )
 )
 
 
 (:action take-caja-transportador
     :parameters (
-        ?c - caja ?t - transportador ?d - dron ?l - loc ?nAnterior ?nPosterior - num
+        ?c - caja ?t - transportador ?d - dron ?l - loc ?nAnterior - num ?nPosterior - num
     )
     :precondition (and 
         (dron-free ?d)
@@ -98,7 +96,7 @@
         (not (dron-free ?d))
         (capacidad-actual ?t ?nAnterior)
         (not (capacidad-actual ?t ?nPosterior) )
-        (increase (total-cost) 1);incrementamos total-cost en 1
+        (increase (total-cost) 1)
         (not (caja-en-transportador ?c ?t ))
     )
 )
@@ -115,7 +113,7 @@
         (not (loc-caja ?c ?l))
         (not (dron-free ?d))
         (caja-cogida ?c ?d)
-        (increase (total-cost) 1);incrementamos total-cost en 1
+        (increase (total-cost) 1)
     )
 )
 
@@ -135,7 +133,7 @@
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
         (not (persona-necesita-contenido ?p ?cont))
-        (increase (total-cost) 1);incrementamos total-cost en 1
+        (increase (total-cost) 1)
     )
 )
 
