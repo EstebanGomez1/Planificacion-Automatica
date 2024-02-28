@@ -31,7 +31,6 @@
 )
 
 (:goal (and
-    (capacidad-actual transportador1 n2)
     (persona-tiene-contenido persona1 comida)
     (persona-tiene-contenido persona2 bebida)
 ))

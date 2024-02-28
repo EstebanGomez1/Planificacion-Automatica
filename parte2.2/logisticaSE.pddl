@@ -28,6 +28,18 @@
     (fly-cost ?L1 - loc ?l2 - loc);funciones usando fluents
 )
 
+(:action move-dron
+    :parameters ( ?d - dron ?A - loc ?B - loc )
+    :precondition (and
+        (loc-dron ?d ?A)
+        ;(dron-free ?d)
+    )
+    :effect (and 
+        (loc-dron ?d ?B)
+        ( not(loc-dron ?d ?A))
+        (increase(total-cost)(fly-cost ?A ?B))
+    )
+)
 
 
 (:action move-dron-transportador

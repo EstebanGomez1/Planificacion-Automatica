@@ -6,7 +6,7 @@
     persona loc caja contenido dron transportador num - objects
 
 )
- 
+
 (:predicates 
     (loc-persona ?p - persona ?l - loc) ;localizacion de una persona herida
     (loc-caja ?c - caja ?l - loc) ;localizacion de una caja
@@ -25,6 +25,17 @@
 
 
 
+(:action move-dron
+    :parameters ( ?d - dron ?A - loc ?B - loc )
+    :precondition (and
+        (loc-dron ?d ?A)
+        ;(dron-free ?d)
+    )
+    :effect (and 
+        (loc-dron ?d ?B)
+        ( not(loc-dron ?d ?A))
+    )
+)
 
 
 (:action move-dron-transportador

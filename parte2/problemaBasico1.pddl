@@ -8,7 +8,7 @@
     transportador1 - transportador
     n0 n1 n2 n3 n4 - num
 )
- 
+
 (:init
     (persona-necesita-contenido persona1 comida)
     (loc-caja caja1 deposito)
