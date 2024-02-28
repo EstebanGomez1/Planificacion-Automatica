@@ -9,6 +9,5 @@ lpg-td
 sgplan40
 ./sgplan40 -o ../ejercicio2.pddl -f ../ejercicio2-problem.pddl 
 
-
-
-
+optic
+./optic-clp ../parte2.2/logisticaSE.pddl ../parte2.2/drone_problem_d1_r0_l4_p4_c4_g4_ct3.pddl
