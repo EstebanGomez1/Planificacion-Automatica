@@ -99,6 +99,7 @@
         (capacidad-actual ?t ?nAnterior)
         (not (capacidad-actual ?t ?nPosterior) )
         (increase (total-cost) 1);incrementamos total-cost en 1
+        (not (caja-en-transportador ?c ?t ))
     )
 )
 
