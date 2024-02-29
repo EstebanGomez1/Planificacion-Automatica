@@ -1,6 +1,6 @@
 (define (domain logisticaSE)
 
-(:requirements :fluents :strips :typing :action-costs)
+(:requirements :fluents :strips :typing :durative-actions)
 
 (:types 
     persona loc caja contenido dron transportador num - objects

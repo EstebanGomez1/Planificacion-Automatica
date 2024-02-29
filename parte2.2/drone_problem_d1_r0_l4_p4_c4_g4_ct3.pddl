@@ -1,0 +1,73 @@
+(define (problem drone_problem_d1_r0_l4_p4_c4_g4_ct3)(:domain logisticaSE)
+(:objects
+	dron1 - dron
+	transportador1 - transportador
+	n0 	n1 	n2 	n3 	n4  - num 
+	deposito - loc
+	Loc1 - loc
+	Loc2 - loc
+	Loc3 - loc
+	Loc4 - loc
+	caja1 - caja
+	caja2 - caja
+	caja3 - caja
+	caja4 - caja
+	food - contenido
+	medicine - contenido
+	bebida - contenido
+	persona0 - persona
+	persona1 - persona
+	persona2 - persona
+	persona3 - persona
+)
+(:init
+	(loc-dron dron1 deposito)
+	(loc-transportador transportador1 deposito)
+	(persona-necesita-contenido persona0 food)
+	(loc-persona persona0 Loc3)
+	(persona-necesita-contenido persona0 medicine)
+	(loc-persona persona0 Loc2)
+	(persona-necesita-contenido persona1 bebida)
+	(loc-persona persona1 Loc1)
+	(persona-necesita-contenido persona2 food)
+	(loc-persona persona2 Loc2)
+	(caja-free caja1)
+	(caja-free caja2)
+	(caja-free caja3)
+	(caja-free caja4)
+	(caja-contenido caja1 food)
+	(loc-caja caja1 deposito)
+	(caja-contenido caja2 medicine)
+	(loc-caja caja2 deposito)
+	(caja-contenido caja3 bebida)
+	(loc-caja caja3 deposito)
+	(caja-contenido caja4 food)
+	(loc-caja caja4 deposito)
+	(siguiente n0 n1) 
+	(siguiente n1 n2) 
+	(siguiente n2 n3) 
+	(siguiente n3 n4) 
+	(capacidad-actual transportador1 n0)
+	(dron-free dron1)
+	(=(fly-cost deposito Loc1) 176)
+	(=(fly-cost deposito Loc2) 132)
+	(=(fly-cost deposito Loc3) 132)
+	(=(fly-cost deposito Loc4) 227)
+	(=(fly-cost Loc1 Loc2) 100)
+	(=(fly-cost Loc1 Loc3) 160)
+	(=(fly-cost Loc1 Loc4) 83)
+	(=(fly-cost Loc2 Loc3) 60)
+	(=(fly-cost Loc2 Loc4) 106)
+	(=(fly-cost Loc3 Loc4) 156)
+)
+(:goal (and
+
+	(loc-dron dron1 deposito)
+	(persona-tiene-contenido persona0 food)
+	(persona-tiene-contenido persona0 medicine)
+	(persona-tiene-contenido persona1 bebida)
+	(persona-tiene-contenido persona2 food)
+	))
+(:metric minimize(total-cost))
+
+)

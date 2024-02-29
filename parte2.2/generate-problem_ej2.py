@@ -266,7 +266,7 @@ def main():
         # Write the initial part of the problem
 
         f.write("(define (problem " + problem_name + ")")
-        f.write("(:domain logisticaSE_ejercicio2)\n")
+        f.write("(:domain logisticaSE)\n")
         f.write("(:objects\n")
 
         ######################################################################
@@ -324,10 +324,19 @@ def main():
                     print(need[x][y], person_name, content_name)
                     f.write(f"\t(persona-necesita-contenido persona{x} {content_name})\n") 
                     f.write(f"\t(loc-persona persona{x} {localizacion})\n")
+        
+        for x in range(options.persons):
+            for y in range(len(content_types)):
+                if need[x][y]:
+                    localizacion_caja = loc[0]
+                    content_name = content_types[y]
                     f.write(f"\t(caja-contenido caja{j} {content_name})\n")
                     f.write(f"\t(loc-caja caja{j} {localizacion_caja})\n")
                     j+=1
-                    
+
+        for x in range(options.crates):    
+            f.write(f"\t(caja-free caja{x+1})\n")
+            
         for i in range(4):
             f.write(f"\t(siguiente n{i} n{i+1}) \n")
             
@@ -369,11 +378,11 @@ def main():
         f.write(")\n")
 
     #Solamente hace print para ver need de goals y personas
-    for x in range(options.persons):
-            for y in range(len(content_types)):
-                person_name = persona[x]
-                content_name = content_types[y]
-                print(need[x][y], person_name, content_name)
+    #for x in range(options.persons):
+    #        for y in range(len(content_types)):
+    #            person_name = persona[x]
+    #           content_name = content_types[y]
+    #            print(need[x][y], person_name, content_name)
 
                 
 if __name__ == '__main__':
