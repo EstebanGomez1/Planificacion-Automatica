@@ -91,7 +91,6 @@
         (loc-transportador ?t ?l)
         (siguiente ?nAnterior ?nPosterior )
         (capacidad-actual ?t ?nPosterior)
-        (caja-free ?c)
     )
     :effect (and 
         (caja-cogida ?c ?d)
@@ -116,6 +115,7 @@
         (not (dron-free ?d))
         (caja-cogida ?c ?d)
         (increase (total-cost) 1)
+        (not (caja-free ?c))
     )
 )
 
@@ -135,7 +135,6 @@
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
         (not (persona-necesita-contenido ?p ?cont))
-        (not(caja-free ?c))
         (increase (total-cost) 1)
     )
 )
