@@ -28,6 +28,8 @@
     (loc-transportador transportador2 deposito)
     (dron-free dron1)
     (dron-free dron2)
+    (=(coste-mov dron1)1)
+    (=(coste-mov dron2)1)
     (=(capacidad-transportador transportador1) 4)
     (=(cajas-deposito)3)
 	(=(fly-cost deposito A ) 100)
@@ -51,4 +53,6 @@
     (persona-tiene-contenido persona2 bebida)
 ))
 
+;uncomment if use
+(:metric minimize (coste-total))
 )
