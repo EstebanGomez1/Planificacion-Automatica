@@ -101,6 +101,7 @@
             )
         )(at end (and
             (caja-en-transportador ?c ?t)
+            (dron-free ?d)
             (decrease (capacidad-transportador ?t)1)
             )
         )
@@ -116,7 +117,6 @@
         (at start (and 
             (dron-free ?d)
             (caja-en-transportador ?c ?t )
-            (>(capacidad-transportador ?t)0)
             )
         )
         (over all(and
@@ -148,7 +148,6 @@
         (at start (and           
             (dron-free ?d)
             (caja-free ?c)
-            (>(cajas-deposito)0)
             )
         )
         (over all (and
@@ -167,7 +166,6 @@
         )
         (at end (and
             (caja-cogida ?c ?d)
-            (decrease(cajas-deposito)1)
             )
         )
     )
