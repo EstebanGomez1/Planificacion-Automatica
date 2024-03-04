@@ -173,23 +173,37 @@
     )
 )
 
-(:action drop-caja
+(:durative-action drop-caja
     :parameters ( ?c - caja ?d - dron ?cont - contenido ?p - persona ?l - loc)
-    :precondition (and 
-        (persona-necesita-contenido ?p ?cont)
-        (caja-contenido ?c ?cont)
-        (loc-dron ?d ?l)
-        (loc-persona ?p ?l)
-        (caja-cogida ?c ?d)
+    :duration(= ?duration 5)
+    :condition (and 
+        (at start(and
+            (persona-necesita-contenido ?p ?cont)
+            (caja-contenido ?c ?cont)
+            (caja-cogida ?c ?d)
+            )
+        )
+        (over all(and
+            (loc-dron ?d ?l)
+            (loc-persona ?p ?l)
+            )
+        )
     )
     :effect (and 
-        (loc-caja ?c ?l)
-        (not (caja-cogida ?c ?d))
-        (dron-free ?d)
-        (persona-tiene-caja ?p ?c)
-        (persona-tiene-contenido ?p ?cont)
-        (not (persona-necesita-contenido ?p ?cont))
-        (increase (coste-total ?d) 1)
+        (at start(and    
+            (loc-caja ?c ?l)
+            (not (caja-cogida ?c ?d))
+            (dron-free ?d)            
+            (not (persona-necesita-contenido ?p ?cont))
+            (increase (coste-total ?d) 1)
+            )
+        )
+        (at end(and
+            (persona-tiene-caja ?p ?c)
+            (persona-tiene-contenido ?p ?cont)
+            )
+        )
+        
     )
 )
 
