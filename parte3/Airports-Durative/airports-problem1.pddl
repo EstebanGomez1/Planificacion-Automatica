@@ -1,4 +1,4 @@
-(define (problem airports-problem1) (:domain airports)
+  (define (problem airports-problem1) (:domain airports)
 (:objects 
     a1 a2 - avion
     c1 c2 c3 - ciudad
