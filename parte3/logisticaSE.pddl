@@ -23,11 +23,10 @@
 )
 
 (:functions
-    (coste-total ?d)
+    (coste-total ?d - dron)
     (fly-cost ?L1 - loc ?l2 - loc)
-    (cajas-deposito)
-    (capacidad-transportador ?t)
-    (coste-mov ?d)
+    (capacidad-transportador ?t - transportador)
+    (coste-mov ?d - dron)
 )
 
 (:durative-action move-dron
