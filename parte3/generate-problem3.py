@@ -125,11 +125,11 @@ def setup_location_coords(options):
     for loc1, loc2 in combinations(range(options.locations + 1), 2):
         cost = flight_cost(location_coords, loc1, loc2)
         flight_costs.append((loc1, loc2, cost))
-
+    
     for loc1 in range(1,options.locations+1):
         coste = flight_cost(location_coords, loc1, loc1)
         flight_costs.append((loc1, loc1, coste))
-        
+
     print("Location positions", location_coords)
     return location_coords, flight_costs
 
@@ -237,7 +237,7 @@ def main():
     for x in range(options.drones):
         dron.append("dron" + str(x + 1))
     for x in range(options.carriers):
-        carrier.append("carrier" + str(x + 1))
+        carrier.append("transportador" + str(x + 1))
     for x in range(options.persons):
         persona.append("persona" + str(x + 0))
     for x in range(options.crates):
@@ -278,16 +278,14 @@ def main():
 
         # TODO: Change the type names below (drone, location, ...)
         # to suit your domain.
-
+        
         for x in dron:
             f.write("\t" + x + " - dron\n")
-            f.write("\t" + "transportador1" + " - transportador\n")
+            
 
-        for i in range(5):
-            f.write("\t")
-            f.write(f"n{i} ")
-            if(i==4): f.write(" - num \n")
-
+        for x in carrier:
+            f.write("\t" + x + " - transportador\n")
+        
         for x in loc:
             f.write("\t" + x + " - loc\n")
 
@@ -311,9 +309,16 @@ def main():
             
         #localizacion del dron 
         localizacion_dron = loc[0]
-        f.write(f"\t(loc-dron dron1 {localizacion_dron})\n")
-        f.write(f"\t(loc-transportador transportador1 {localizacion_dron})\n")
-        
+        for x in dron:   
+            f.write(f"\t(loc-dron {x} {localizacion_dron})\n")
+            f.write(f"\t(dron-free {x})\n")
+            f.write(f"\t(=(coste-mov {x}) 1)\n")
+            f.write(f"\t(=(coste-total {x}) 0)\n")
+
+            
+        for x in carrier:    
+            f.write(f"\t(loc-transportador {x} {localizacion_dron})\n")
+            f.write(f"\t(=(capacidad-transportador {x}) 4)\n")
 
         #localizacion de personas, cajas y contenidos 
         #contenido = random.choice(content_types)
@@ -332,28 +337,26 @@ def main():
         for x in range(options.persons):
             for y in range(len(content_types)):
                 if need[x][y]:
-                    localizacion_caja = loc[0]
                     content_name = content_types[y]
                     f.write(f"\t(caja-contenido caja{j} {content_name})\n")
-                    f.write(f"\t(loc-caja caja{j} {localizacion_caja})\n")
                     j+=1
+        
+        for x in caja:
+            localizacion_caja = loc[0]
+            f.write(f"\t(loc-caja {x} {localizacion_caja})\n")
 
         for x in range(options.crates):    
             f.write(f"\t(caja-free caja{x+1})\n")
             
-        for i in range(4):
-            f.write(f"\t(siguiente n{i} n{i+1}) \n")
-            
-        f.write(f"\t(capacidad-actual transportador1 n0)\n")
-        f.write(f"\t(dron-free dron1)\n")
-        
         f.write(f"\t(=(fly-cost deposito deposito)1)\n")
         for loc1, loc2, cost in flight_costs:
+            print(loc1,loc2)
             if(loc1== 0):
                 f.write(f"\t(=(fly-cost deposito Loc{loc2}) {cost})\n")
             else:
                 f.write(f"\t(=(fly-cost Loc{loc1} Loc{loc2}) {cost})\n")
-            
+                f.write(f"\t(=(fly-cost Loc{loc2} Loc{loc1}) {cost})\n")
+
         f.write(")\n")
 
         ######################################################################
@@ -363,9 +366,7 @@ def main():
 
         # All Drones should end up at the depot
         for x in dron:
-            f.write("\n")
-            # TODO: Write a goal that the drone x is at the depot
-            f.write("\t(loc-dron dron1 deposito)\n")
+            f.write(f"\t(loc-dron {x} deposito)\n")
         
         for x in range(options.persons):
             for y in range(len(content_types)):
@@ -378,7 +379,7 @@ def main():
         f.write("\t))\n")
         
         #metrica para optimizar minimizando total-cost 
-        f.write(f"(:metric minimize(total-cost))\n\n")
+        #f.write(f"(:metric minimize(total-cost))\n\n")
 
         f.write(")\n")
 
