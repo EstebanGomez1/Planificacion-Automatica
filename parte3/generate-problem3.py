@@ -312,8 +312,6 @@ def main():
         for x in dron:   
             f.write(f"\t(loc-dron {x} {localizacion_dron})\n")
             f.write(f"\t(dron-free {x})\n")
-            f.write(f"\t(=(coste-mov {x}) 1)\n")
-            f.write(f"\t(=(coste-total {x}) 0)\n")
 
             
         for x in carrier:    
@@ -324,15 +322,16 @@ def main():
         #contenido = random.choice(content_types)
         j=1
         for x in range(options.persons):
+            localizacion = random.choice(loc)
+            f.write(f"\t(loc-persona persona{x} {localizacion})\n")
             for y in range(len(content_types)):
                 if need[x][y]:
-                    localizacion = random.choice(loc)
                     localizacion_caja = loc[0]
                     person_name = persona[x]
                     content_name = content_types[y]
                     print(need[x][y], person_name, content_name)
                     f.write(f"\t(persona-necesita-contenido persona{x} {content_name})\n") 
-                    f.write(f"\t(loc-persona persona{x} {localizacion})\n")
+                    
         
         for x in range(options.persons):
             for y in range(len(content_types)):

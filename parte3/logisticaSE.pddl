@@ -23,10 +23,8 @@
 )
 
 (:functions
-    (coste-total ?d - dron)
     (fly-cost ?L1 - loc ?l2 - loc)
     (capacidad-transportador ?t - transportador)
-    (coste-mov ?d - dron)
 )
 
 (:durative-action move-dron
@@ -44,7 +42,6 @@
         )
         (at end(and
             (loc-dron ?d ?B)
-            (increase (coste-total ?d)(* (fly-cost ?A ?B) (coste-mov ?d)))
             )
         )
     )  
@@ -71,7 +68,6 @@
         (at end(and
             (loc-dron ?d ?B)
             (loc-transportador ?t ?B)
-            (increase (coste-total ?d)(* (fly-cost ?A ?B) (coste-mov ?d)))
             )
         )
     )
@@ -95,7 +91,6 @@
     )
     :effect (and 
         (at start(and              
-            (increase (coste-total ?d) 1) 
             (not (caja-cogida ?c ?d))   
             )
         )(at end (and
@@ -129,7 +124,6 @@
         (at start (and 
             (caja-cogida ?c ?d)
             (not (dron-free ?d))
-            (increase (coste-total ?d) 1)
             )
         )
         (at end(and 
@@ -160,7 +154,6 @@
             (not (loc-caja ?c ?l))
             (not (dron-free ?d))
             (not (caja-free ?c))
-            (increase (coste-total ?d) 1)
             )
         )
         (at end (and
@@ -192,7 +185,6 @@
             (not (caja-cogida ?c ?d))
             (dron-free ?d)            
             (not (persona-necesita-contenido ?p ?cont))
-            (increase (coste-total ?d) 1)
             )
         )
         (at end(and

@@ -21,12 +21,8 @@
 (:init
 	(loc-dron dron1 deposito)
 	(dron-free dron1)
-	(=(coste-mov dron1) 1)
-	(=(coste-total dron1) 0)
 	(loc-dron dron2 deposito)
 	(dron-free dron2)
-	(=(coste-mov dron2) 1)
-	(=(coste-total dron2) 0)
 	(loc-transportador transportador1 deposito)
 	(=(capacidad-transportador transportador1) 4)
 	(loc-transportador transportador2 deposito)
