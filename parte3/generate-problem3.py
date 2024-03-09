@@ -352,6 +352,7 @@ def main():
             print(loc1,loc2)
             if(loc1== 0):
                 f.write(f"\t(=(fly-cost deposito Loc{loc2}) {cost})\n")
+                f.write(f"\t(=(fly-cost Loc{loc2} deposito) {cost})\n")
             else:
                 f.write(f"\t(=(fly-cost Loc{loc1} Loc{loc2}) {cost})\n")
                 f.write(f"\t(=(fly-cost Loc{loc2} Loc{loc1}) {cost})\n")

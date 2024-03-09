@@ -21,6 +21,7 @@
     (loc-transportador ?t - transportador ?l - loc)
     (caja-en-transportador ?c - caja ?t - transportador )
     (capacidad-actual ?t - transportador ?n - num)
+    (caja-free ?c - caja)
 )
 
 
@@ -101,7 +102,7 @@
         (loc-caja ?c ?l)
         (loc-dron ?d ?l)
         (dron-free ?d)
-
+        (caja-free ?c)
     )
     :effect (and 
         (not (loc-caja ?c ?l))
@@ -127,6 +128,7 @@
         (persona-tiene-caja ?p ?c)
         (persona-tiene-contenido ?p ?cont)
         (not (persona-necesita-contenido ?p ?cont))
+        (not(caja-free ?c))
     )
 )
 

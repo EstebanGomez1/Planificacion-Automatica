@@ -319,7 +319,10 @@ def main():
                     f.write(f"\t(caja-contenido caja{j} {content_name})\n")
                     f.write(f"\t(loc-caja caja{j} {localizacion_caja})\n")
                     j+=1
-                    
+
+        for x in caja:
+            f.write(f"\t(caja-free {x})\n")  
+
         for i in range(4):
             f.write(f"\t(siguiente n{i} n{i+1}) \n")
             
@@ -355,7 +358,7 @@ def main():
             for y in range(len(content_types)):
                 person_name = persona[x]
                 content_name = content_types[y]
-                print(need[x][y], person_name, content_name)
+                #print(need[x][y], person_name, content_name)
                 
 if __name__ == '__main__':
     main()

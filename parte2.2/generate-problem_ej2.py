@@ -351,9 +351,12 @@ def main():
         for loc1, loc2, cost in flight_costs:
             if(loc1== 0):
                 f.write(f"\t(=(fly-cost deposito Loc{loc2}) {cost})\n")
+                f.write(f"\t(=(fly-cost Loc{loc2} deposito) {cost})\n")
             else:
                 f.write(f"\t(=(fly-cost Loc{loc1} Loc{loc2}) {cost})\n")
-            
+                f.write(f"\t(=(fly-cost Loc{loc2} Loc{loc1}) {cost})\n")
+
+        f.write(f"\t(=(total-cost)0)\n")    
         f.write(")\n")
 
         ######################################################################
