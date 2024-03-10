@@ -13,7 +13,7 @@
     (caja-contenido ?c - caja ?cont - contenido) ;contenido de una caja
     (persona-tiene-contenido ?p - persona ?cont - contenido) ;la persona tiene ya un contenido
     (persona-tiene-caja ?p - persona ?c - caja) ;la persona tiene ya una caja
-    (persona-necesita-contenido ?p - persona ?cont -contenido) ;necesita una persona contenido de una caja
+    (persona-necesita-contenido ?p - persona ?cont - contenido) ;necesita una persona contenido de una caja
     (loc-dron ?d - dron ?l - loc) ;localizacion del dron
     (siguiente ?n1 ?n2 - num ) ;siguiente del espacio del transportador
     (caja-cogida ?c - caja ?d - dron) ;caja cogida dispuesta a meterse en el transportador
