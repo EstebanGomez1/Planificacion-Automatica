@@ -1,7 +1,5 @@
 (define (domain logisticaSE)
-
-(:requirements :fluents :strips :typing :action-costs)
-
+(:requirements :strips :typing :action-costs)
 (:types 
     persona loc caja contenido dron transportador num - objects
 
@@ -13,7 +11,7 @@
     (caja-contenido ?c - caja ?cont - contenido) 
     (persona-tiene-contenido ?p - persona ?cont - contenido) 
     (persona-tiene-caja ?p - persona ?c - caja) 
-    (persona-necesita-contenido ?p - persona ?cont -contenido) 
+    (persona-necesita-contenido ?p - persona ?cont - contenido) 
     (loc-dron ?d - dron ?l - loc) 
     (siguiente ?n1 ?n2 - num ) 
     (caja-cogida ?c - caja ?d - dron) 
@@ -36,8 +34,8 @@
     )
     :effect (and 
         (loc-dron ?d ?B)
-        ( not(loc-dron ?d ?A))
-        (increase(total-cost)(fly-cost ?A ?B))
+        (not(loc-dron ?d ?A))
+        (increase (total-cost) (fly-cost ?A ?B))
     )
 )
 
@@ -51,10 +49,10 @@
     )
     :effect (and 
         (loc-dron ?d ?B)
-        ( not(loc-dron ?d ?A))
+        (not(loc-dron ?d ?A))
         (loc-transportador ?t ?B)
-        ( not(loc-transportador ?t ?A))
-        (increase(total-cost)(fly-cost ?A ?B))
+        (not(loc-transportador ?t ?A))
+        (increase (total-cost) (fly-cost ?A ?B))
     )
 )
 
