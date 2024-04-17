@@ -2,6 +2,30 @@
 
 (defdomain logisticaEmergencias (
 
-))
+        (:operator (!move-dron ?d ?x ?y)                         ;param
+        	((DRON ?d)  (LOC ?x)  (LOC ?y)  (loc-dron ?d ?x)) ;prec	
+        	((loc-dron ?d ?x)) ;delete
+        	((loc-dron ?d ?y)) ;add
+        )
+        (:operator (!take-caja ?c ?d ?br ?l)
+        	((CAJA ?c) (DRON ?d) (LOC ?x) (BRAZO ?br) (caja-free ?c) (loc-dron ?c ?x) (loc-caja ?d ?x)) 
+        	((caja-free ?c) (loc-caja ?d ?x) (brazo-dron-free ?d ?br)) ;delete state
+        	((carry-caja ?d ?br ?c))				     ;add state
+        )	
+        (:operator(!drop-caja ?c ?d ?br ?cont ?p ?l)
+        	((CAJA ?c) (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (PERSONA ?p) (LOC ?x) (persona-necesita-contenido ?p ?cont) (caja-contenido ?c ?cont) (loc-dron ?d ?l) (carry-caja ?d ?br ?c) (loc-persona ?p ?l))
+        	((carry-caja ?d ?br ?c) (persona-necesita-contenido ?p ?cont))
+        	((loc-caja ?c ?l) (brazo-dron-free ?d ?br) (persona-tiene-caja ?p ?c) (persona-tiene-cont ?p ?cont))
+	)
+	(:method (enviar-todo ?p ?cont)
+		(;prec take-caja brazo1
+			(persona-necesita-contenido ?p ?cont)
+		(;subtasks take-caja-brazo1
+			(!take-caja ?c ?d ?br ?l)
+			(!move-dron ?d ?l ?l)
+			(!drop-caja ?c ?d ?br ?cont ?p ?l)
+		)
+	)
+)
 
 

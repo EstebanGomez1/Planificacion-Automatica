@@ -1,4 +1,4 @@
-(defproblem problemaBasico1
+(defproblem problem problemaBasico
 	(;Initial state
 		(persona-necesita-contenido persona1 comida)
 		(loc-caja caja1 deposito)
