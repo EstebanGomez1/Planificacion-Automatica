@@ -18,14 +18,12 @@
         	((loc-caja ?c ?l) (brazo-dron-free ?d ?br) (persona-tiene-caja ?p ?c) (persona-tiene-cont ?p ?cont))
 	)
 	(:method (enviar-todo ?p ?cont)
-		(;prec take-caja brazo1
+		(;prec enviar-todo
 			(persona-necesita-contenido ?p ?cont)
-		(;subtasks take-caja-brazo1
+		)(;subtasks enviar-todo
 			(!take-caja ?c ?d ?br ?l)
-			(!move-dron ?d ?l ?l)
-			(!drop-caja ?c ?d ?br ?cont ?p ?l)
+			(!move-dron ?d ?l ?y)
+			(!drop-caja ?c ?d ?br ?cont ?p ?y)
 		)
 	)
-)
-
-
+))
