@@ -7,8 +7,8 @@
         	((loc-dron ?d ?x)) ;delete
         	((loc-dron ?d ?y)) ;add
         )
-        (:operator (!take-caja ?c ?d ?br ?l)
-        	((CAJA ?c) (DRON ?d) (LOC ?x) (BRAZO ?br) (caja-free ?c) (loc-dron ?c ?x) (loc-caja ?d ?x)) 
+        (:operator (!take-caja ?c ?d ?br ?x)
+        	((CAJA ?c) (DRON ?d) (LOC ?x) (BRAZO ?br) (caja-free ?c) (loc-dron ?d ?x) (loc-caja ?c ?x)) 
         	((caja-free ?c) (loc-caja ?d ?x) (brazo-dron-free ?d ?br)) ;delete state
         	((carry-caja ?d ?br ?c))				     ;add state
         )	
@@ -24,7 +24,7 @@
 			(!take-caja ?c ?d ?br ?l)
 			(!move-dron ?d ?l ?y)
 			(!drop-caja ?c ?d ?br ?cont ?p ?y)
-			(!move-dron ?d ?l ?y)
+			(!move-dron ?d ?y ?l)
 			(enviar-todo)
 		)
 		()

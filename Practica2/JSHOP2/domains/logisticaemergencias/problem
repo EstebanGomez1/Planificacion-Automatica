@@ -5,6 +5,7 @@
 		
 		(persona-necesita-contenido persona1 comida)
 		(loc-caja caja1 deposito)
+		(caja-free caja1)
 		(loc-persona persona1 b)
 		(loc-dron dron1 deposito)
 		(caja-contenido caja1 comida)
