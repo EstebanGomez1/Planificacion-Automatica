@@ -17,13 +17,17 @@
         	((carry-caja ?d ?br ?c) (persona-necesita-contenido ?p ?cont))
         	((loc-caja ?c ?l) (brazo-dron-free ?d ?br) (persona-tiene-caja ?p ?c) (persona-tiene-cont ?p ?cont))
 	)
-	(:method (enviar-todo ?p ?cont)
+	(:method (enviar-todo)
 		(;prec enviar-todo
 			(persona-necesita-contenido ?p ?cont)
 		)(;subtasks enviar-todo
 			(!take-caja ?c ?d ?br ?l)
 			(!move-dron ?d ?l ?y)
 			(!drop-caja ?c ?d ?br ?cont ?p ?y)
+			(!move-dron ?d ?l ?y)
+			(enviar-todo)
 		)
+		()
+		()
 	)
 ))

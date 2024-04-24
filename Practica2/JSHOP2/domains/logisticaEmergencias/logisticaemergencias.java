@@ -7,86 +7,100 @@ class Precondition0 extends Precondition
 
 	public Precondition0(Term[] unifier)
 	{
-		p = new Precondition[5];
-		p[1] = new PreconditionAtomic(new Predicate(0, 3, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
-		p[2] = new PreconditionAtomic(new Predicate(1, 3, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
-		p[3] = new PreconditionAtomic(new Predicate(1, 3, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
-		p[4] = new PreconditionAtomic(new Predicate(2, 3, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(1), TermList.NIL))), unifier);
-		b = new Term[5][];
-		b[0] = unifier;
-		b[0] = Term.merge( b, 1 );
+		p = new Precondition[4];
+		p[0] = new PreconditionAtomic(new Predicate(0, 3, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
+		p[1] = new PreconditionAtomic(new Predicate(1, 3, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
+		p[2] = new PreconditionAtomic(new Predicate(1, 3, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
+		p[3] = new PreconditionAtomic(new Predicate(2, 3, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(1), TermList.NIL))), unifier);
+		b = new Term[4][];
 
 		setFirst(false);
 	}
 
 	public void bind(Term[] binding)
 	{
-		b[0] = binding;
-		b[0] = Term.merge( b, 1 );
+		p[0].bind(binding);
 		p[1].bind(binding);
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
+		p[2].bind(binding);
+		p[3].bind(binding);
 	}
 
 	protected Term[] nextBindingHelper()
 	{
-		while (b[4] == null)
+		if (b[0] == null)
+			return null;
+
+		b[3] = p[3].nextBinding();
+		while (b[3] == null)
 		{
-			boolean b3changed = false;
-			while (b[3] == null)
+			b[2] = p[2].nextBinding();
+			while (b[2] == null)
 			{
-				boolean b2changed = false;
-				while (b[2] == null)
+				b[1] = p[1].nextBinding();
+				while (b[1] == null)
 				{
-					boolean b1changed = false;
-					while (b[1] == null)
-					{
-						b[1] = p[1].nextBinding();
-						if (b[1] == null)
-							return null;
-						b1changed = true;
-					}
-					if ( b1changed ) {
-						p[2].reset();
-						p[2].bind(Term.merge(b, 2));
-					}
-					b[2] = p[2].nextBinding();
-					if (b[2] == null) b[1] = null;
-					b2changed = true;
+					b[0] = p[0].nextBinding();
+					if (b[0] == null)
+						return null;
+					p[1].reset();
+					p[1].bind(b[0]);
+					b[1] = p[1].nextBinding();
 				}
-				if ( b2changed ) {
-					p[3].reset();
-					p[3].bind(Term.merge(b, 3));
-				}
-				b[3] = p[3].nextBinding();
-				if (b[3] == null) b[2] = null;
-				b3changed = true;
+				p[2].reset();
+				p[2].bind(Term.merge(b, 2));
+				b[2] = p[2].nextBinding();
 			}
-			if ( b3changed ) {
-				p[4].reset();
-				p[4].bind(Term.merge(b, 4));
-			}
-			b[4] = p[4].nextBinding();
-			if (b[4] == null) b[3] = null;
+			p[3].reset();
+			p[3].bind(Term.merge(b, 3));
+			b[3] = p[3].nextBinding();
 		}
 
-		Term[] retVal = Term.merge(b, 5);
-		b[4] = null;
-		return retVal;
+		return Term.merge(b, 4);
 	}
 
 	protected void resetHelper()
 	{
+		p[0].reset();
 		p[1].reset();
 		p[2].reset();
 		p[3].reset();
-		p[4].reset();
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
+
+		b[0] = p[0].nextBinding();
+		if (b[0] == null)
+			return;
+
+		p[1].bind(b[0]);
+		b[1] = p[1].nextBinding();
+		while (b[1] == null)
+		{
+			b[0] = p[0].nextBinding();
+			if (b[0] == null)
+				return;
+			p[1].reset();
+			p[1].bind(b[0]);
+			b[1] = p[1].nextBinding();
+		}
+
+		p[2].bind(Term.merge(b, 2));
+		b[2] = p[2].nextBinding();
+		while (b[2] == null)
+		{
+			b[1] = p[1].nextBinding();
+			while (b[1] == null)
+			{
+				b[0] = p[0].nextBinding();
+				if (b[0] == null)
+					return;
+				p[1].reset();
+				p[1].bind(b[0]);
+				b[1] = p[1].nextBinding();
+			}
+			p[2].reset();
+			p[2].bind(Term.merge(b, 2));
+			b[2] = p[2].nextBinding();
+		}
+
+		p[3].bind(Term.merge(b, 3));
 	}
 }
 
@@ -126,131 +140,229 @@ class Precondition1 extends Precondition
 
 	public Precondition1(Term[] unifier)
 	{
-		p = new Precondition[8];
-		p[1] = new PreconditionAtomic(new Predicate(3, 5, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
-		p[2] = new PreconditionAtomic(new Predicate(0, 5, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
-		p[3] = new PreconditionAtomic(new Predicate(1, 5, new TermList(TermVariable.getVariable(4), TermList.NIL)), unifier);
-		p[4] = new PreconditionAtomic(new Predicate(4, 5, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
-		p[5] = new PreconditionAtomic(new Predicate(5, 5, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
-		p[6] = new PreconditionAtomic(new Predicate(2, 5, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(4), TermList.NIL))), unifier);
-		p[7] = new PreconditionAtomic(new Predicate(6, 5, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(4), TermList.NIL))), unifier);
-		b = new Term[8][];
-		b[0] = unifier;
-		b[0] = Term.merge( b, 1 );
+		p = new Precondition[7];
+		p[0] = new PreconditionAtomic(new Predicate(3, 5, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
+		p[1] = new PreconditionAtomic(new Predicate(0, 5, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
+		p[2] = new PreconditionAtomic(new Predicate(1, 5, new TermList(TermVariable.getVariable(4), TermList.NIL)), unifier);
+		p[3] = new PreconditionAtomic(new Predicate(4, 5, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
+		p[4] = new PreconditionAtomic(new Predicate(5, 5, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
+		p[5] = new PreconditionAtomic(new Predicate(2, 5, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(4), TermList.NIL))), unifier);
+		p[6] = new PreconditionAtomic(new Predicate(6, 5, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(4), TermList.NIL))), unifier);
+		b = new Term[7][];
 
 		setFirst(false);
 	}
 
 	public void bind(Term[] binding)
 	{
-		b[0] = binding;
-		b[0] = Term.merge( b, 1 );
+		p[0].bind(binding);
 		p[1].bind(binding);
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
-		b[5] = null;
-		b[6] = null;
-		b[7] = null;
+		p[2].bind(binding);
+		p[3].bind(binding);
+		p[4].bind(binding);
+		p[5].bind(binding);
+		p[6].bind(binding);
 	}
 
 	protected Term[] nextBindingHelper()
 	{
-		while (b[7] == null)
+		if (b[0] == null)
+			return null;
+
+		b[6] = p[6].nextBinding();
+		while (b[6] == null)
 		{
-			boolean b6changed = false;
-			while (b[6] == null)
+			b[5] = p[5].nextBinding();
+			while (b[5] == null)
 			{
-				boolean b5changed = false;
-				while (b[5] == null)
+				b[4] = p[4].nextBinding();
+				while (b[4] == null)
 				{
-					boolean b4changed = false;
-					while (b[4] == null)
+					b[3] = p[3].nextBinding();
+					while (b[3] == null)
 					{
-						boolean b3changed = false;
-						while (b[3] == null)
+						b[2] = p[2].nextBinding();
+						while (b[2] == null)
 						{
-							boolean b2changed = false;
-							while (b[2] == null)
+							b[1] = p[1].nextBinding();
+							while (b[1] == null)
 							{
-								boolean b1changed = false;
-								while (b[1] == null)
-								{
-									b[1] = p[1].nextBinding();
-									if (b[1] == null)
-										return null;
-									b1changed = true;
-								}
-								if ( b1changed ) {
-									p[2].reset();
-									p[2].bind(Term.merge(b, 2));
-								}
-								b[2] = p[2].nextBinding();
-								if (b[2] == null) b[1] = null;
-								b2changed = true;
+								b[0] = p[0].nextBinding();
+								if (b[0] == null)
+									return null;
+								p[1].reset();
+								p[1].bind(b[0]);
+								b[1] = p[1].nextBinding();
 							}
-							if ( b2changed ) {
-								p[3].reset();
-								p[3].bind(Term.merge(b, 3));
-							}
-							b[3] = p[3].nextBinding();
-							if (b[3] == null) b[2] = null;
-							b3changed = true;
+							p[2].reset();
+							p[2].bind(Term.merge(b, 2));
+							b[2] = p[2].nextBinding();
 						}
-						if ( b3changed ) {
-							p[4].reset();
-							p[4].bind(Term.merge(b, 4));
-						}
-						b[4] = p[4].nextBinding();
-						if (b[4] == null) b[3] = null;
-						b4changed = true;
+						p[3].reset();
+						p[3].bind(Term.merge(b, 3));
+						b[3] = p[3].nextBinding();
 					}
-					if ( b4changed ) {
-						p[5].reset();
-						p[5].bind(Term.merge(b, 5));
-					}
-					b[5] = p[5].nextBinding();
-					if (b[5] == null) b[4] = null;
-					b5changed = true;
+					p[4].reset();
+					p[4].bind(Term.merge(b, 4));
+					b[4] = p[4].nextBinding();
 				}
-				if ( b5changed ) {
-					p[6].reset();
-					p[6].bind(Term.merge(b, 6));
-				}
-				b[6] = p[6].nextBinding();
-				if (b[6] == null) b[5] = null;
-				b6changed = true;
+				p[5].reset();
+				p[5].bind(Term.merge(b, 5));
+				b[5] = p[5].nextBinding();
 			}
-			if ( b6changed ) {
-				p[7].reset();
-				p[7].bind(Term.merge(b, 7));
-			}
-			b[7] = p[7].nextBinding();
-			if (b[7] == null) b[6] = null;
+			p[6].reset();
+			p[6].bind(Term.merge(b, 6));
+			b[6] = p[6].nextBinding();
 		}
 
-		Term[] retVal = Term.merge(b, 8);
-		b[7] = null;
-		return retVal;
+		return Term.merge(b, 7);
 	}
 
 	protected void resetHelper()
 	{
+		p[0].reset();
 		p[1].reset();
 		p[2].reset();
 		p[3].reset();
 		p[4].reset();
 		p[5].reset();
 		p[6].reset();
-		p[7].reset();
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
-		b[5] = null;
-		b[6] = null;
-		b[7] = null;
+
+		b[0] = p[0].nextBinding();
+		if (b[0] == null)
+			return;
+
+		p[1].bind(b[0]);
+		b[1] = p[1].nextBinding();
+		while (b[1] == null)
+		{
+			b[0] = p[0].nextBinding();
+			if (b[0] == null)
+				return;
+			p[1].reset();
+			p[1].bind(b[0]);
+			b[1] = p[1].nextBinding();
+		}
+
+		p[2].bind(Term.merge(b, 2));
+		b[2] = p[2].nextBinding();
+		while (b[2] == null)
+		{
+			b[1] = p[1].nextBinding();
+			while (b[1] == null)
+			{
+				b[0] = p[0].nextBinding();
+				if (b[0] == null)
+					return;
+				p[1].reset();
+				p[1].bind(b[0]);
+				b[1] = p[1].nextBinding();
+			}
+			p[2].reset();
+			p[2].bind(Term.merge(b, 2));
+			b[2] = p[2].nextBinding();
+		}
+
+		p[3].bind(Term.merge(b, 3));
+		b[3] = p[3].nextBinding();
+		while (b[3] == null)
+		{
+			b[2] = p[2].nextBinding();
+			while (b[2] == null)
+			{
+				b[1] = p[1].nextBinding();
+				while (b[1] == null)
+				{
+					b[0] = p[0].nextBinding();
+					if (b[0] == null)
+						return;
+					p[1].reset();
+					p[1].bind(b[0]);
+					b[1] = p[1].nextBinding();
+				}
+				p[2].reset();
+				p[2].bind(Term.merge(b, 2));
+				b[2] = p[2].nextBinding();
+			}
+			p[3].reset();
+			p[3].bind(Term.merge(b, 3));
+			b[3] = p[3].nextBinding();
+		}
+
+		p[4].bind(Term.merge(b, 4));
+		b[4] = p[4].nextBinding();
+		while (b[4] == null)
+		{
+			b[3] = p[3].nextBinding();
+			while (b[3] == null)
+			{
+				b[2] = p[2].nextBinding();
+				while (b[2] == null)
+				{
+					b[1] = p[1].nextBinding();
+					while (b[1] == null)
+					{
+						b[0] = p[0].nextBinding();
+						if (b[0] == null)
+							return;
+						p[1].reset();
+						p[1].bind(b[0]);
+						b[1] = p[1].nextBinding();
+					}
+					p[2].reset();
+					p[2].bind(Term.merge(b, 2));
+					b[2] = p[2].nextBinding();
+				}
+				p[3].reset();
+				p[3].bind(Term.merge(b, 3));
+				b[3] = p[3].nextBinding();
+			}
+			p[4].reset();
+			p[4].bind(Term.merge(b, 4));
+			b[4] = p[4].nextBinding();
+		}
+
+		p[5].bind(Term.merge(b, 5));
+		b[5] = p[5].nextBinding();
+		while (b[5] == null)
+		{
+			b[4] = p[4].nextBinding();
+			while (b[4] == null)
+			{
+				b[3] = p[3].nextBinding();
+				while (b[3] == null)
+				{
+					b[2] = p[2].nextBinding();
+					while (b[2] == null)
+					{
+						b[1] = p[1].nextBinding();
+						while (b[1] == null)
+						{
+							b[0] = p[0].nextBinding();
+							if (b[0] == null)
+								return;
+							p[1].reset();
+							p[1].bind(b[0]);
+							b[1] = p[1].nextBinding();
+						}
+						p[2].reset();
+						p[2].bind(Term.merge(b, 2));
+						b[2] = p[2].nextBinding();
+					}
+					p[3].reset();
+					p[3].bind(Term.merge(b, 3));
+					b[3] = p[3].nextBinding();
+				}
+				p[4].reset();
+				p[4].bind(Term.merge(b, 4));
+				b[4] = p[4].nextBinding();
+			}
+			p[5].reset();
+			p[5].bind(Term.merge(b, 5));
+			b[5] = p[5].nextBinding();
+		}
+
+		p[6].bind(Term.merge(b, 6));
 	}
 }
 
@@ -292,169 +404,123 @@ class Precondition2 extends Precondition
 
 	public Precondition2(Term[] unifier)
 	{
-		p = new Precondition[12];
-		p[1] = new PreconditionAtomic(new Predicate(3, 7, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
-		p[2] = new PreconditionAtomic(new Predicate(0, 7, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
-		p[3] = new PreconditionAtomic(new Predicate(4, 7, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
-		p[4] = new PreconditionAtomic(new Predicate(9, 7, new TermList(TermVariable.getVariable(3), TermList.NIL)), unifier);
-		p[5] = new PreconditionAtomic(new Predicate(10, 7, new TermList(TermVariable.getVariable(4), TermList.NIL)), unifier);
-		p[6] = new PreconditionAtomic(new Predicate(1, 7, new TermList(TermVariable.getVariable(6), TermList.NIL)), unifier);
-		p[7] = new PreconditionAtomic(new Predicate(11, 7, new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(3), TermList.NIL))), unifier);
-		p[8] = new PreconditionAtomic(new Predicate(12, 7, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(3), TermList.NIL))), unifier);
-		p[9] = new PreconditionAtomic(new Predicate(2, 7, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(5), TermList.NIL))), unifier);
-		p[10] = new PreconditionAtomic(new Predicate(8, 7, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(2), new TermList(TermVariable.getVariable(0), TermList.NIL)))), unifier);
-		p[11] = new PreconditionAtomic(new Predicate(13, 7, new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(5), TermList.NIL))), unifier);
-		b = new Term[12][];
-		b[0] = unifier;
-		b[0] = Term.merge( b, 1 );
+		p = new Precondition[11];
+		p[0] = new PreconditionAtomic(new Predicate(3, 7, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
+		p[1] = new PreconditionAtomic(new Predicate(0, 7, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
+		p[2] = new PreconditionAtomic(new Predicate(4, 7, new TermList(TermVariable.getVariable(2), TermList.NIL)), unifier);
+		p[3] = new PreconditionAtomic(new Predicate(9, 7, new TermList(TermVariable.getVariable(3), TermList.NIL)), unifier);
+		p[4] = new PreconditionAtomic(new Predicate(10, 7, new TermList(TermVariable.getVariable(4), TermList.NIL)), unifier);
+		p[5] = new PreconditionAtomic(new Predicate(1, 7, new TermList(TermVariable.getVariable(6), TermList.NIL)), unifier);
+		p[6] = new PreconditionAtomic(new Predicate(11, 7, new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(3), TermList.NIL))), unifier);
+		p[7] = new PreconditionAtomic(new Predicate(12, 7, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(3), TermList.NIL))), unifier);
+		p[8] = new PreconditionAtomic(new Predicate(2, 7, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(5), TermList.NIL))), unifier);
+		p[9] = new PreconditionAtomic(new Predicate(8, 7, new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(2), new TermList(TermVariable.getVariable(0), TermList.NIL)))), unifier);
+		p[10] = new PreconditionAtomic(new Predicate(13, 7, new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(5), TermList.NIL))), unifier);
+		b = new Term[11][];
 
 		setFirst(false);
 	}
 
 	public void bind(Term[] binding)
 	{
-		b[0] = binding;
-		b[0] = Term.merge( b, 1 );
+		p[0].bind(binding);
 		p[1].bind(binding);
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
-		b[5] = null;
-		b[6] = null;
-		b[7] = null;
-		b[8] = null;
-		b[9] = null;
-		b[10] = null;
-		b[11] = null;
+		p[2].bind(binding);
+		p[3].bind(binding);
+		p[4].bind(binding);
+		p[5].bind(binding);
+		p[6].bind(binding);
+		p[7].bind(binding);
+		p[8].bind(binding);
+		p[9].bind(binding);
+		p[10].bind(binding);
 	}
 
 	protected Term[] nextBindingHelper()
 	{
-		while (b[11] == null)
+		if (b[0] == null)
+			return null;
+
+		b[10] = p[10].nextBinding();
+		while (b[10] == null)
 		{
-			boolean b10changed = false;
-			while (b[10] == null)
+			b[9] = p[9].nextBinding();
+			while (b[9] == null)
 			{
-				boolean b9changed = false;
-				while (b[9] == null)
+				b[8] = p[8].nextBinding();
+				while (b[8] == null)
 				{
-					boolean b8changed = false;
-					while (b[8] == null)
+					b[7] = p[7].nextBinding();
+					while (b[7] == null)
 					{
-						boolean b7changed = false;
-						while (b[7] == null)
+						b[6] = p[6].nextBinding();
+						while (b[6] == null)
 						{
-							boolean b6changed = false;
-							while (b[6] == null)
+							b[5] = p[5].nextBinding();
+							while (b[5] == null)
 							{
-								boolean b5changed = false;
-								while (b[5] == null)
+								b[4] = p[4].nextBinding();
+								while (b[4] == null)
 								{
-									boolean b4changed = false;
-									while (b[4] == null)
+									b[3] = p[3].nextBinding();
+									while (b[3] == null)
 									{
-										boolean b3changed = false;
-										while (b[3] == null)
+										b[2] = p[2].nextBinding();
+										while (b[2] == null)
 										{
-											boolean b2changed = false;
-											while (b[2] == null)
+											b[1] = p[1].nextBinding();
+											while (b[1] == null)
 											{
-												boolean b1changed = false;
-												while (b[1] == null)
-												{
-													b[1] = p[1].nextBinding();
-													if (b[1] == null)
-														return null;
-													b1changed = true;
-												}
-												if ( b1changed ) {
-													p[2].reset();
-													p[2].bind(Term.merge(b, 2));
-												}
-												b[2] = p[2].nextBinding();
-												if (b[2] == null) b[1] = null;
-												b2changed = true;
+												b[0] = p[0].nextBinding();
+												if (b[0] == null)
+													return null;
+												p[1].reset();
+												p[1].bind(b[0]);
+												b[1] = p[1].nextBinding();
 											}
-											if ( b2changed ) {
-												p[3].reset();
-												p[3].bind(Term.merge(b, 3));
-											}
-											b[3] = p[3].nextBinding();
-											if (b[3] == null) b[2] = null;
-											b3changed = true;
+											p[2].reset();
+											p[2].bind(Term.merge(b, 2));
+											b[2] = p[2].nextBinding();
 										}
-										if ( b3changed ) {
-											p[4].reset();
-											p[4].bind(Term.merge(b, 4));
-										}
-										b[4] = p[4].nextBinding();
-										if (b[4] == null) b[3] = null;
-										b4changed = true;
+										p[3].reset();
+										p[3].bind(Term.merge(b, 3));
+										b[3] = p[3].nextBinding();
 									}
-									if ( b4changed ) {
-										p[5].reset();
-										p[5].bind(Term.merge(b, 5));
-									}
-									b[5] = p[5].nextBinding();
-									if (b[5] == null) b[4] = null;
-									b5changed = true;
+									p[4].reset();
+									p[4].bind(Term.merge(b, 4));
+									b[4] = p[4].nextBinding();
 								}
-								if ( b5changed ) {
-									p[6].reset();
-									p[6].bind(Term.merge(b, 6));
-								}
-								b[6] = p[6].nextBinding();
-								if (b[6] == null) b[5] = null;
-								b6changed = true;
+								p[5].reset();
+								p[5].bind(Term.merge(b, 5));
+								b[5] = p[5].nextBinding();
 							}
-							if ( b6changed ) {
-								p[7].reset();
-								p[7].bind(Term.merge(b, 7));
-							}
-							b[7] = p[7].nextBinding();
-							if (b[7] == null) b[6] = null;
-							b7changed = true;
+							p[6].reset();
+							p[6].bind(Term.merge(b, 6));
+							b[6] = p[6].nextBinding();
 						}
-						if ( b7changed ) {
-							p[8].reset();
-							p[8].bind(Term.merge(b, 8));
-						}
-						b[8] = p[8].nextBinding();
-						if (b[8] == null) b[7] = null;
-						b8changed = true;
+						p[7].reset();
+						p[7].bind(Term.merge(b, 7));
+						b[7] = p[7].nextBinding();
 					}
-					if ( b8changed ) {
-						p[9].reset();
-						p[9].bind(Term.merge(b, 9));
-					}
-					b[9] = p[9].nextBinding();
-					if (b[9] == null) b[8] = null;
-					b9changed = true;
+					p[8].reset();
+					p[8].bind(Term.merge(b, 8));
+					b[8] = p[8].nextBinding();
 				}
-				if ( b9changed ) {
-					p[10].reset();
-					p[10].bind(Term.merge(b, 10));
-				}
-				b[10] = p[10].nextBinding();
-				if (b[10] == null) b[9] = null;
-				b10changed = true;
+				p[9].reset();
+				p[9].bind(Term.merge(b, 9));
+				b[9] = p[9].nextBinding();
 			}
-			if ( b10changed ) {
-				p[11].reset();
-				p[11].bind(Term.merge(b, 11));
-			}
-			b[11] = p[11].nextBinding();
-			if (b[11] == null) b[10] = null;
+			p[10].reset();
+			p[10].bind(Term.merge(b, 10));
+			b[10] = p[10].nextBinding();
 		}
 
-		Term[] retVal = Term.merge(b, 12);
-		b[11] = null;
-		return retVal;
+		return Term.merge(b, 11);
 	}
 
 	protected void resetHelper()
 	{
+		p[0].reset();
 		p[1].reset();
 		p[2].reset();
 		p[3].reset();
@@ -465,18 +531,372 @@ class Precondition2 extends Precondition
 		p[8].reset();
 		p[9].reset();
 		p[10].reset();
-		p[11].reset();
-		b[1] = null;
-		b[2] = null;
-		b[3] = null;
-		b[4] = null;
-		b[5] = null;
-		b[6] = null;
-		b[7] = null;
-		b[8] = null;
-		b[9] = null;
-		b[10] = null;
-		b[11] = null;
+
+		b[0] = p[0].nextBinding();
+		if (b[0] == null)
+			return;
+
+		p[1].bind(b[0]);
+		b[1] = p[1].nextBinding();
+		while (b[1] == null)
+		{
+			b[0] = p[0].nextBinding();
+			if (b[0] == null)
+				return;
+			p[1].reset();
+			p[1].bind(b[0]);
+			b[1] = p[1].nextBinding();
+		}
+
+		p[2].bind(Term.merge(b, 2));
+		b[2] = p[2].nextBinding();
+		while (b[2] == null)
+		{
+			b[1] = p[1].nextBinding();
+			while (b[1] == null)
+			{
+				b[0] = p[0].nextBinding();
+				if (b[0] == null)
+					return;
+				p[1].reset();
+				p[1].bind(b[0]);
+				b[1] = p[1].nextBinding();
+			}
+			p[2].reset();
+			p[2].bind(Term.merge(b, 2));
+			b[2] = p[2].nextBinding();
+		}
+
+		p[3].bind(Term.merge(b, 3));
+		b[3] = p[3].nextBinding();
+		while (b[3] == null)
+		{
+			b[2] = p[2].nextBinding();
+			while (b[2] == null)
+			{
+				b[1] = p[1].nextBinding();
+				while (b[1] == null)
+				{
+					b[0] = p[0].nextBinding();
+					if (b[0] == null)
+						return;
+					p[1].reset();
+					p[1].bind(b[0]);
+					b[1] = p[1].nextBinding();
+				}
+				p[2].reset();
+				p[2].bind(Term.merge(b, 2));
+				b[2] = p[2].nextBinding();
+			}
+			p[3].reset();
+			p[3].bind(Term.merge(b, 3));
+			b[3] = p[3].nextBinding();
+		}
+
+		p[4].bind(Term.merge(b, 4));
+		b[4] = p[4].nextBinding();
+		while (b[4] == null)
+		{
+			b[3] = p[3].nextBinding();
+			while (b[3] == null)
+			{
+				b[2] = p[2].nextBinding();
+				while (b[2] == null)
+				{
+					b[1] = p[1].nextBinding();
+					while (b[1] == null)
+					{
+						b[0] = p[0].nextBinding();
+						if (b[0] == null)
+							return;
+						p[1].reset();
+						p[1].bind(b[0]);
+						b[1] = p[1].nextBinding();
+					}
+					p[2].reset();
+					p[2].bind(Term.merge(b, 2));
+					b[2] = p[2].nextBinding();
+				}
+				p[3].reset();
+				p[3].bind(Term.merge(b, 3));
+				b[3] = p[3].nextBinding();
+			}
+			p[4].reset();
+			p[4].bind(Term.merge(b, 4));
+			b[4] = p[4].nextBinding();
+		}
+
+		p[5].bind(Term.merge(b, 5));
+		b[5] = p[5].nextBinding();
+		while (b[5] == null)
+		{
+			b[4] = p[4].nextBinding();
+			while (b[4] == null)
+			{
+				b[3] = p[3].nextBinding();
+				while (b[3] == null)
+				{
+					b[2] = p[2].nextBinding();
+					while (b[2] == null)
+					{
+						b[1] = p[1].nextBinding();
+						while (b[1] == null)
+						{
+							b[0] = p[0].nextBinding();
+							if (b[0] == null)
+								return;
+							p[1].reset();
+							p[1].bind(b[0]);
+							b[1] = p[1].nextBinding();
+						}
+						p[2].reset();
+						p[2].bind(Term.merge(b, 2));
+						b[2] = p[2].nextBinding();
+					}
+					p[3].reset();
+					p[3].bind(Term.merge(b, 3));
+					b[3] = p[3].nextBinding();
+				}
+				p[4].reset();
+				p[4].bind(Term.merge(b, 4));
+				b[4] = p[4].nextBinding();
+			}
+			p[5].reset();
+			p[5].bind(Term.merge(b, 5));
+			b[5] = p[5].nextBinding();
+		}
+
+		p[6].bind(Term.merge(b, 6));
+		b[6] = p[6].nextBinding();
+		while (b[6] == null)
+		{
+			b[5] = p[5].nextBinding();
+			while (b[5] == null)
+			{
+				b[4] = p[4].nextBinding();
+				while (b[4] == null)
+				{
+					b[3] = p[3].nextBinding();
+					while (b[3] == null)
+					{
+						b[2] = p[2].nextBinding();
+						while (b[2] == null)
+						{
+							b[1] = p[1].nextBinding();
+							while (b[1] == null)
+							{
+								b[0] = p[0].nextBinding();
+								if (b[0] == null)
+									return;
+								p[1].reset();
+								p[1].bind(b[0]);
+								b[1] = p[1].nextBinding();
+							}
+							p[2].reset();
+							p[2].bind(Term.merge(b, 2));
+							b[2] = p[2].nextBinding();
+						}
+						p[3].reset();
+						p[3].bind(Term.merge(b, 3));
+						b[3] = p[3].nextBinding();
+					}
+					p[4].reset();
+					p[4].bind(Term.merge(b, 4));
+					b[4] = p[4].nextBinding();
+				}
+				p[5].reset();
+				p[5].bind(Term.merge(b, 5));
+				b[5] = p[5].nextBinding();
+			}
+			p[6].reset();
+			p[6].bind(Term.merge(b, 6));
+			b[6] = p[6].nextBinding();
+		}
+
+		p[7].bind(Term.merge(b, 7));
+		b[7] = p[7].nextBinding();
+		while (b[7] == null)
+		{
+			b[6] = p[6].nextBinding();
+			while (b[6] == null)
+			{
+				b[5] = p[5].nextBinding();
+				while (b[5] == null)
+				{
+					b[4] = p[4].nextBinding();
+					while (b[4] == null)
+					{
+						b[3] = p[3].nextBinding();
+						while (b[3] == null)
+						{
+							b[2] = p[2].nextBinding();
+							while (b[2] == null)
+							{
+								b[1] = p[1].nextBinding();
+								while (b[1] == null)
+								{
+									b[0] = p[0].nextBinding();
+									if (b[0] == null)
+										return;
+									p[1].reset();
+									p[1].bind(b[0]);
+									b[1] = p[1].nextBinding();
+								}
+								p[2].reset();
+								p[2].bind(Term.merge(b, 2));
+								b[2] = p[2].nextBinding();
+							}
+							p[3].reset();
+							p[3].bind(Term.merge(b, 3));
+							b[3] = p[3].nextBinding();
+						}
+						p[4].reset();
+						p[4].bind(Term.merge(b, 4));
+						b[4] = p[4].nextBinding();
+					}
+					p[5].reset();
+					p[5].bind(Term.merge(b, 5));
+					b[5] = p[5].nextBinding();
+				}
+				p[6].reset();
+				p[6].bind(Term.merge(b, 6));
+				b[6] = p[6].nextBinding();
+			}
+			p[7].reset();
+			p[7].bind(Term.merge(b, 7));
+			b[7] = p[7].nextBinding();
+		}
+
+		p[8].bind(Term.merge(b, 8));
+		b[8] = p[8].nextBinding();
+		while (b[8] == null)
+		{
+			b[7] = p[7].nextBinding();
+			while (b[7] == null)
+			{
+				b[6] = p[6].nextBinding();
+				while (b[6] == null)
+				{
+					b[5] = p[5].nextBinding();
+					while (b[5] == null)
+					{
+						b[4] = p[4].nextBinding();
+						while (b[4] == null)
+						{
+							b[3] = p[3].nextBinding();
+							while (b[3] == null)
+							{
+								b[2] = p[2].nextBinding();
+								while (b[2] == null)
+								{
+									b[1] = p[1].nextBinding();
+									while (b[1] == null)
+									{
+										b[0] = p[0].nextBinding();
+										if (b[0] == null)
+											return;
+										p[1].reset();
+										p[1].bind(b[0]);
+										b[1] = p[1].nextBinding();
+									}
+									p[2].reset();
+									p[2].bind(Term.merge(b, 2));
+									b[2] = p[2].nextBinding();
+								}
+								p[3].reset();
+								p[3].bind(Term.merge(b, 3));
+								b[3] = p[3].nextBinding();
+							}
+							p[4].reset();
+							p[4].bind(Term.merge(b, 4));
+							b[4] = p[4].nextBinding();
+						}
+						p[5].reset();
+						p[5].bind(Term.merge(b, 5));
+						b[5] = p[5].nextBinding();
+					}
+					p[6].reset();
+					p[6].bind(Term.merge(b, 6));
+					b[6] = p[6].nextBinding();
+				}
+				p[7].reset();
+				p[7].bind(Term.merge(b, 7));
+				b[7] = p[7].nextBinding();
+			}
+			p[8].reset();
+			p[8].bind(Term.merge(b, 8));
+			b[8] = p[8].nextBinding();
+		}
+
+		p[9].bind(Term.merge(b, 9));
+		b[9] = p[9].nextBinding();
+		while (b[9] == null)
+		{
+			b[8] = p[8].nextBinding();
+			while (b[8] == null)
+			{
+				b[7] = p[7].nextBinding();
+				while (b[7] == null)
+				{
+					b[6] = p[6].nextBinding();
+					while (b[6] == null)
+					{
+						b[5] = p[5].nextBinding();
+						while (b[5] == null)
+						{
+							b[4] = p[4].nextBinding();
+							while (b[4] == null)
+							{
+								b[3] = p[3].nextBinding();
+								while (b[3] == null)
+								{
+									b[2] = p[2].nextBinding();
+									while (b[2] == null)
+									{
+										b[1] = p[1].nextBinding();
+										while (b[1] == null)
+										{
+											b[0] = p[0].nextBinding();
+											if (b[0] == null)
+												return;
+											p[1].reset();
+											p[1].bind(b[0]);
+											b[1] = p[1].nextBinding();
+										}
+										p[2].reset();
+										p[2].bind(Term.merge(b, 2));
+										b[2] = p[2].nextBinding();
+									}
+									p[3].reset();
+									p[3].bind(Term.merge(b, 3));
+									b[3] = p[3].nextBinding();
+								}
+								p[4].reset();
+								p[4].bind(Term.merge(b, 4));
+								b[4] = p[4].nextBinding();
+							}
+							p[5].reset();
+							p[5].bind(Term.merge(b, 5));
+							b[5] = p[5].nextBinding();
+						}
+						p[6].reset();
+						p[6].bind(Term.merge(b, 6));
+						b[6] = p[6].nextBinding();
+					}
+					p[7].reset();
+					p[7].bind(Term.merge(b, 7));
+					b[7] = p[7].nextBinding();
+				}
+				p[8].reset();
+				p[8].bind(Term.merge(b, 8));
+				b[8] = p[8].nextBinding();
+			}
+			p[9].reset();
+			p[9].bind(Term.merge(b, 9));
+			b[9] = p[9].nextBinding();
+		}
+
+		p[10].bind(Term.merge(b, 10));
 	}
 }
 
@@ -517,10 +937,11 @@ class Method0 extends Method
 {
 	public Method0()
 	{
-		super(new Predicate(0, 7, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(1), TermList.NIL))));
-		TaskList[] subsIn = new TaskList[1];
+		super(new Predicate(0, 7, TermList.NIL));
+		TaskList[] subsIn = new TaskList[2];
 
 		subsIn[0] = createTaskList0();
+		subsIn[1] = TaskList.empty;
 
 		setSubs(subsIn);
 	}
@@ -529,10 +950,12 @@ class Method0 extends Method
 	{
 		TaskList retVal;
 
-		retVal = new TaskList(3, true);
+		retVal = new TaskList(5, true);
 		retVal.subtasks[0] = new TaskList(new TaskAtom(new Predicate(1, 7, new TermList(TermVariable.getVariable(2), new TermList(TermVariable.getVariable(3), new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(5), TermList.NIL))))), false, true));
 		retVal.subtasks[1] = new TaskList(new TaskAtom(new Predicate(0, 7, new TermList(TermVariable.getVariable(3), new TermList(TermVariable.getVariable(5), new TermList(TermVariable.getVariable(6), TermList.NIL)))), false, true));
 		retVal.subtasks[2] = new TaskList(new TaskAtom(new Predicate(2, 7, new TermList(TermVariable.getVariable(2), new TermList(TermVariable.getVariable(3), new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(1), new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(6), TermList.NIL))))))), false, true));
+		retVal.subtasks[3] = new TaskList(new TaskAtom(new Predicate(0, 7, new TermList(TermVariable.getVariable(3), new TermList(TermVariable.getVariable(5), new TermList(TermVariable.getVariable(6), TermList.NIL)))), false, true));
+		retVal.subtasks[4] = new TaskList(new TaskAtom(new Predicate(0, 7, TermList.NIL), false, false));
 
 		return retVal;
 	}
@@ -545,6 +968,9 @@ class Method0 extends Method
 		{
 			case 0:
 				p = (new PreconditionAtomic(new Predicate(11, 7, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(1), TermList.NIL))), unifier)).setComparator(null);
+			break;
+			case 1:
+				p = (new PreconditionNil(7)).setComparator(null);
 			break;
 			default:
 				return null;
@@ -560,6 +986,7 @@ class Method0 extends Method
 		switch (which)
 		{
 			case 0: return "Method0Branch0";
+			case 1: return "Method0Branch1";
 			default: return null;
 		}
 	}

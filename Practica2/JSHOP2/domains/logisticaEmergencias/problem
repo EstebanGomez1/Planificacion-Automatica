@@ -1,5 +1,15 @@
 (defproblem problem logisticaEmergencias
 	(;Initial state
+		(DRON dron1) (PERSONA persona1) (LOC A) (LOC B) (LOC C) (LOC D) (LOC deposito) (CAJA caja1) 
+		(CONTENIDO comida) (CONTENIDO medicina) (BRAZO brazo1) (BRAZO brazo2)
+
+		persona1 - persona
+    caja1 - caja
+    comida medicina - contenido
+    A B C D deposito - loc
+    dron1 - dron
+    brazo1 - brazo
+    brazo2 - brazo
 		(persona-necesita-contenido persona1 comida)
 		(loc-caja caja1 deposito)
 		(loc-persona persona1 B)
@@ -8,6 +18,6 @@
 		(brazo-dron-free dron1 brazo1)
 		(brazo-dron-free dron1 brazo2)
 	)(;Task to solve
-		(enviar-todo persona1 comida)
+		(enviar-todo)
 	)
   )
