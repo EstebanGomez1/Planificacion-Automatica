@@ -858,11 +858,13 @@ class Precondition5 extends Precondition
 
 	public Precondition5(Term[] unifier)
 	{
-		p = new Precondition[4];
-		p[1] = new PreconditionAtomic(new Predicate(0, 5, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
-		p[2] = new PreconditionAtomic(new Predicate(1, 5, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
-		p[3] = new PreconditionAtomic(new Predicate(11, 5, new TermList(TermVariable.getVariable(2), new TermList(TermVariable.getVariable(3), TermList.NIL))), unifier);
-		b = new Term[4][];
+		p = new Precondition[6];
+		p[1] = new PreconditionAtomic(new Predicate(0, 6, new TermList(TermVariable.getVariable(0), TermList.NIL)), unifier);
+		p[2] = new PreconditionAtomic(new Predicate(4, 6, new TermList(TermVariable.getVariable(1), TermList.NIL)), unifier);
+		p[3] = new PreconditionAtomic(new Predicate(2, 6, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(2), TermList.NIL))), unifier);
+		p[4] = new PreconditionAtomic(new Predicate(11, 6, new TermList(TermVariable.getVariable(3), new TermList(TermVariable.getVariable(4), TermList.NIL))), unifier);
+		p[5] = new PreconditionAtomic(new Predicate(7, 6, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(1), TermList.NIL))), unifier);
+		b = new Term[6][];
 		b[0] = unifier;
 		b[0] = Term.merge( b, 1 );
 
@@ -877,41 +879,65 @@ class Precondition5 extends Precondition
 		b[1] = null;
 		b[2] = null;
 		b[3] = null;
+		b[4] = null;
+		b[5] = null;
 	}
 
 	protected Term[] nextBindingHelper()
 	{
-		while (b[3] == null)
+		while (b[5] == null)
 		{
-			boolean b2changed = false;
-			while (b[2] == null)
+			boolean b4changed = false;
+			while (b[4] == null)
 			{
-				boolean b1changed = false;
-				while (b[1] == null)
+				boolean b3changed = false;
+				while (b[3] == null)
 				{
-					b[1] = p[1].nextBinding();
-					if (b[1] == null)
-						return null;
-					b1changed = true;
+					boolean b2changed = false;
+					while (b[2] == null)
+					{
+						boolean b1changed = false;
+						while (b[1] == null)
+						{
+							b[1] = p[1].nextBinding();
+							if (b[1] == null)
+								return null;
+							b1changed = true;
+						}
+						if ( b1changed ) {
+							p[2].reset();
+							p[2].bind(Term.merge(b, 2));
+						}
+						b[2] = p[2].nextBinding();
+						if (b[2] == null) b[1] = null;
+						b2changed = true;
+					}
+					if ( b2changed ) {
+						p[3].reset();
+						p[3].bind(Term.merge(b, 3));
+					}
+					b[3] = p[3].nextBinding();
+					if (b[3] == null) b[2] = null;
+					b3changed = true;
 				}
-				if ( b1changed ) {
-					p[2].reset();
-					p[2].bind(Term.merge(b, 2));
+				if ( b3changed ) {
+					p[4].reset();
+					p[4].bind(Term.merge(b, 4));
 				}
-				b[2] = p[2].nextBinding();
-				if (b[2] == null) b[1] = null;
-				b2changed = true;
+				b[4] = p[4].nextBinding();
+				if (b[4] == null) b[3] = null;
+				b4changed = true;
 			}
-			if ( b2changed ) {
-				p[3].reset();
-				p[3].bind(Term.merge(b, 3));
+			if ( b4changed ) {
+				p[5].reset();
+				p[5].bind(Term.merge(b, 5));
 			}
-			b[3] = p[3].nextBinding();
-			if (b[3] == null) b[2] = null;
+			b[5] = p[5].nextBinding();
+			if (b[5] == null) b[4] = null;
 		}
 
-		Term[] retVal = Term.merge(b, 4);
-		b[3] = null;
+		Term[] retVal = Term.merge(b, 6);
+		b[5] = null;
 		return retVal;
 	}
 
@@ -920,9 +946,13 @@ class Precondition5 extends Precondition
 		p[1].reset();
 		p[2].reset();
 		p[3].reset();
+		p[4].reset();
+		p[5].reset();
 		b[1] = null;
 		b[2] = null;
 		b[3] = null;
+		b[4] = null;
+		b[5] = null;
 	}
 }
 
@@ -930,7 +960,7 @@ class Method2 extends Method
 {
 	public Method2()
 	{
-		super(new Predicate(2, 5, TermList.NIL));
+		super(new Predicate(2, 6, TermList.NIL));
 		TaskList[] subsIn = new TaskList[2];
 
 		subsIn[0] = createTaskList0();
@@ -944,10 +974,10 @@ class Method2 extends Method
 		TaskList retVal;
 
 		retVal = new TaskList(4, true);
-		retVal.subtasks[0] = new TaskList(new TaskAtom(new Predicate(0, 5, TermList.NIL), false, false));
-		retVal.subtasks[1] = new TaskList(new TaskAtom(new Predicate(1, 5, TermList.NIL), false, false));
-		retVal.subtasks[2] = new TaskList(new TaskAtom(new Predicate(0, 5, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(4), new TermList(TermVariable.getVariable(1), TermList.NIL)))), false, true));
-		retVal.subtasks[3] = new TaskList(new TaskAtom(new Predicate(2, 5, TermList.NIL), false, false));
+		retVal.subtasks[0] = new TaskList(new TaskAtom(new Predicate(0, 6, TermList.NIL), false, false));
+		retVal.subtasks[1] = new TaskList(new TaskAtom(new Predicate(1, 6, TermList.NIL), false, false));
+		retVal.subtasks[2] = new TaskList(new TaskAtom(new Predicate(0, 6, new TermList(TermVariable.getVariable(0), new TermList(TermVariable.getVariable(5), new TermList(TermVariable.getVariable(2), TermList.NIL)))), false, true));
+		retVal.subtasks[3] = new TaskList(new TaskAtom(new Predicate(2, 6, TermList.NIL), false, false));
 
 		return retVal;
 	}
@@ -962,7 +992,7 @@ class Method2 extends Method
 				p = (new Precondition5(unifier)).setComparator(null);
 			break;
 			case 1:
-				p = (new PreconditionNil(5)).setComparator(null);
+				p = (new PreconditionNil(6)).setComparator(null);
 			break;
 			default:
 				return null;

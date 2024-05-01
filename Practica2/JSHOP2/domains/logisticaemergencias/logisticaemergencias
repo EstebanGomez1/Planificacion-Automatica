@@ -49,7 +49,8 @@
 	)
 	(:method (enviar-todo)
 		(;prec enviar-todo
-			(DRON ?d) (LOC ?l) (persona-necesita-contenido ?p ?cont) 
+			(DRON ?d)(BRAZO ?br)
+			(loc-dron ?d ?l)(persona-necesita-contenido ?p ?cont)(brazo-dron-free ?d ?br)
 		)(;subtasks enviar-todo
 			(take-more)
 			(enviar-carga)
