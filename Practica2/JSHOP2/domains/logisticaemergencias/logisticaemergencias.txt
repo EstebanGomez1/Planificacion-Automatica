@@ -15,7 +15,9 @@ caja-contenido
 loc-persona
 persona-tiene-caja
 persona-tiene-cont
-1
+3
+take-more
+enviar-carga
 enviar-todo
 3
 !move-dron

@@ -1,7 +1,7 @@
 COMANDOS PARA EJECUTAR:
 
-- ./jshop2-console.sh logisticaEmergencias
-- ./jshop2-gui.sh logisticaEmergencias
+- ./jshop2-console.sh logisticaemergencias
+- ./jshop2-gui.sh logisticaemergencias
 
 -----> el ultimo sirve para ver los planes creados (gui)
 
@@ -9,6 +9,7 @@ COMANDOS PARA EJECUTAR:
 de cada una (ejemplo, no aparece caja-free en gui y es porque falta en problem poner caja-free caja1)
 
 2. Tener cuidado con los parametros, teníamos take-caja ?c ?d ?br ?l y despues utilizabamos x en vez de l
+
 
 3. 
 

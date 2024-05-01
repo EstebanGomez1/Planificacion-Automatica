@@ -17,17 +17,47 @@
         	((carry-caja ?d ?br ?c) (persona-necesita-contenido ?p ?cont))
         	((loc-caja ?c ?l) (brazo-dron-free ?d ?br) (persona-tiene-caja ?p ?c) (persona-tiene-cont ?p ?cont))
 	)
-	(:method (enviar-todo)
-		(;prec enviar-todo
+	(:method (take-more)
+		(;prec coger-mas
 			(persona-necesita-contenido ?p ?cont)
-		)(;subtasks enviar-todo
+			(brazo-dron-free ?d ?br)
+			(caja-free ?c)
+			(loc-caja ?c ?l1)
+			(loc-dron ?d ?l)
+		)(;subtask coger-mas
 			(!take-caja ?c ?d ?br ?l)
+			(take-more)
+		)
+		()
+		()
+	)
+	(:method (enviar-carga)
+		(;prec enviar carga
+			(DRON ?d)
+			(carry-caja ?d ?br ?c)
+			(loc-dron ?d ?l)
+			(loc-persona ?p ?y)
+			(caja-contenido ?c ?cont)
+			(persona-necesita-contenido ?p ?cont)
+		)(;acciones
 			(!move-dron ?d ?l ?y)
 			(!drop-caja ?c ?d ?br ?cont ?p ?y)
+			(enviar-carga)
+		)
+		()
+		()
+	)
+	(:method (enviar-todo)
+		(;prec enviar-todo
+			(DRON ?d) (LOC ?l) (persona-necesita-contenido ?p ?cont) 
+		)(;subtasks enviar-todo
+			(take-more)
+			(enviar-carga)
 			(!move-dron ?d ?y ?l)
 			(enviar-todo)
 		)
 		()
 		()
 	)
+			
 ))

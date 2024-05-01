@@ -1,14 +1,19 @@
 (defproblem problem logisticaemergencias
 	(;Initial state
-		(DRON dron1) (PERSONA persona1) (LOC a) (LOC b) (LOC c) (LOC d) (LOC deposito) (CAJA caja1) 
+		(DRON dron1) (PERSONA persona1) (PERSONA persona2) (LOC a) (LOC b) (LOC c) (LOC d) (LOC deposito) (CAJA caja1) (CAJA caja2)
 		(CONTENIDO comida) (CONTENIDO medicina) (BRAZO brazo1) (BRAZO brazo2)
 		
 		(persona-necesita-contenido persona1 comida)
+		(persona-necesita-contenido persona2 medicina)
 		(loc-caja caja1 deposito)
+		(loc-caja caja2 deposito)
 		(caja-free caja1)
+		(caja-free caja2)
 		(loc-persona persona1 b)
+		(loc-persona persona2 c)
 		(loc-dron dron1 deposito)
 		(caja-contenido caja1 comida)
+		(caja-contenido caja2 medicina)
 		(brazo-dron-free dron1 brazo1)
 		(brazo-dron-free dron1 brazo2)
 
