@@ -1,0 +1,116 @@
+; features of SHOP2.
+
+(defdomain logisticaemergencias (
+
+        (:operator (!move-dron ?d ?x ?y)                         ;param
+        	((DRON ?d)  (LOC ?x)  (LOC ?y)  (loc-dron ?d ?x) (coste-viaje ?cost) ;prec	
+        	((loc-dron ?d ?x)) ;delete
+        	((loc-dron ?d ?y) (inc ?cost ?50) ;add
+        )
+        
+        (:operator (!move-dron-transportador ?d ?t ?x ?y)
+        	( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (LOC ?y) (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost) (capacidad-actual-transportador ?t ?cap))
+        	( (loc-dron ?d ?x) (loc-transportador ?t ?x) )
+        	( (loc-dron ?d ?y) (loc-transportador ?t ?y) ((inc ?cost (+ 50 ?cap))) )
+        )
+        	
+        (:operator (!take-caja ?c ?d ?br ?x)
+        	((DRON ?d) (LOC ?x) (BRAZO ?br) (loc-dron ?d ?x) (loc-cajas ?c ?x) (cantidad-cajas ?cont ?num) (brazo-dron-free ?d ?br) (> ?num 0 ) )
+        	((brazo-dron-free ?d ?br) ) ;delete state
+        	((inc ?num -1) (contenido-brazo ?br ?cont)  )				     ;add state
+        )	
+        
+        (:operator(!drop-caja ?c ?d ?br ?cont ?l)
+        	( (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (LOC ?x) (loc-necesita-contenido ?l ?cont ?nCont) (loc-dron ?d ?l) (contenido-brazo ?br ?cont) (> ?nCont 0) )
+        	((contenido-brazo ?br ?cont))
+        	((brazo-dron-free ?d ?br) (inc ?nCont -1))
+	)
+	
+	(:operator(!cargar-transportador ?d ?br ?t ?x)
+		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+			(CONTENIDO ?cont) (contenido-brazo ?br ?cont) 
+			(contenido-transportador ?t ?ncontT))
+		( (contenido-brazo ?br ?cont) )
+		( (brazo-dron-free ?d ?br) (+ ?ncontT 1) )
+	)
+	
+	(:operator(!descargar-transportador ?d ?br ?t ?x)
+		( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+			(CONTENIDO ?cont) (brazo-dron-free ?d ?br) 
+			(contenido-transportador ?t ?ncontT) (> ?ncontT 0) )
+		( (brazo-dron-free ?d ?br) )
+		( (- ?ncontT 1) contenido-brazo ?br ?cont))
+	) 
+		
+	
+	
+	(:method (take-more)
+		(;prec coger-mas
+			(persona-necesita-contenido ?p ?cont)
+			(brazo-dron-free ?d ?br)
+			(caja-free ?c)
+			(loc-caja ?c ?l1)
+			(loc-dron ?d ?l)
+		)(;subtask coger-mas
+			(!take-caja ?c ?d ?br ?l)
+			(take-more)
+		)
+		()
+		()
+	)
+	(:method (llenar-transportador)
+		(;prec
+			...
+		)( 
+			...
+			(take-more)
+			(llenar-transportador)
+		)
+		()
+		()
+	(:method (enviar-carga)
+		(;prec enviar carga
+			(DRON ?d)
+			(carry-caja ?d ?br ?c)
+			(loc-dron ?d ?l)
+			(loc-persona ?p ?y)
+			(caja-contenido ?c ?cont)
+			(persona-necesita-contenido ?p ?cont)
+		)(;acciones
+			(!move-dron ?d ?l ?y)
+			(!drop-caja ?c ?d ?br ?cont ?p ?y)
+			(enviar-carga)
+		)
+		()
+		()
+	)
+	(:method (enviar-carga-transportador)
+		(;prec
+			(DRON ?d)
+			(TRANSPORTADOR ?t)
+			...
+		)(
+			...
+			(enviar-carga-transportador)
+		)
+		()
+		()
+	)
+		
+	(:method (enviar-todo)
+		(;prec enviar-todo
+			(DRON ?d)(BRAZO ?br)
+			(loc-dron ?d ?l)(persona-necesita-contenido ?p ?cont)(brazo-dron-free ?d ?br)
+		)(;subtasks enviar-todo
+			(take-more)
+			(llenar-transportador)
+			(enviar-carga-transportador) ;en caso de que el transportador tenga cajas
+			(enviar-carga) ; en caso de que el transportador no tenga cajas
+			(!move-dron ?d ?y ?l)
+			(enviar-todo)
+		)
+		()
+		()
+	)
+			
+))
