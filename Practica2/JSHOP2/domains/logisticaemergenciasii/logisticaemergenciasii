@@ -83,12 +83,14 @@
 	)
 	(:method (llenar-transportador)
 		(;prec
-			(contenido-brazo ?br ?cont)
 			(loc-dron ?d ?x)
 			(loc-transportador ?t ?x)
+			(capacidad-actual-transportador ?t ?cap)
+			(capacidad-max-transportador ?t ?nMax)
+			(call < ?cap ?nMax)
 		)( 
-			(!cargar-transportador ?d ?br ?t ?x)
 			(take-more)
+			(!cargar-transportador ?d ?br ?t ?x)
 			(llenar-transportador)
 		)
 		()
@@ -132,11 +134,10 @@
 		
 	(:method (enviar-todo)
 		(;prec enviar-todo con transportador
-			(DRON ?d)(BRAZO ?br)
+			(DRON ?d)(BRAZO ?br)(transportador ?t)
 			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
 			(call > ?ncont 1)
 		)(;subtasks enviar-todo
-			(take-more)
 			(llenar-transportador)
 			(enviar-carga-transportador) ;en caso de que el transportador tenga cajas
 			(!move-dron-transportador ?d ?t ?y ?x)
