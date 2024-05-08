@@ -1,0 +1,170 @@
+; features of SHOP2.
+
+(defdomain logisticaemergenciasiii (
+
+	(:operator (!move-dron ?d ?x ?y)                         ;param
+		((DRON ?d)  (LOC ?x)  (LOC ?y)  (loc-dron ?d ?x) (coste-viaje ?cost) ) ;prec	
+		((loc-dron ?d ?x)(coste-viaje ?cost)) ;delete
+		((loc-dron ?d ?y) (coste-viaje (call + ?cost 50)) ) ;add
+	)
+	
+	(:operator (!move-dron-transportador ?d ?t ?x ?y)
+		( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (LOC ?y) (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost) (capacidad-actual-transportador ?t ?cap) )
+		( (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost))
+		( (loc-dron ?d ?y) (loc-transportador ?t ?y) (coste-viaje (call + ?cap 50)) )
+	)
+		
+	(:operator (!take-caja ?d ?br ?x ?cont)
+		((DRON ?d) (LOC ?x) (BRAZO ?br) (loc-dron ?d ?x) (loc-cajas ?x) (cantidad-cajas ?cont ?num) (brazo-dron-free ?d ?br) (call > ?num 0 ) )
+		((brazo-dron-free ?d ?br) (cantidad-cajas ?cont ?num) ) ;delete state
+		((cantidad-cajas ?cont (call - ?num 1)) (contenido-brazo ?br ?cont)  )				     ;add state
+	)	
+	
+	(:operator(!drop-caja ?d ?br ?cont ?x)
+        	( (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (LOC ?x) (loc-necesita-contenido ?x ?cont ?nCont) (loc-dron ?d ?x) (contenido-brazo ?br ?cont) (call > ?nCont 0) 
+				(loc-necesita ?x ?numCont))
+        	((contenido-brazo ?br ?cont) (loc-necesita-contenido ?x ?cont ?nCont) (loc-necesita ?x ?numCont) )
+        	((brazo-dron-free ?d ?br) (loc-necesita-contenido ?x ?cont (call - ?nCont 1)) (loc-necesita ?x (call - ?numCont 1)) )
+	)
+	
+	(:operator(!cargar-transportador ?d ?br ?t ?x)
+		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+			(CONTENIDO ?cont) (contenido-brazo ?br ?cont) 
+			(contenido-transportador ?t ?cont ?ncontT)
+			(capacidad-actual-transportador ?t ?cap)
+			(capacidad-max-transportador ?t ?nMax)
+			(call <= ?cap ?nMax)
+			)
+		( (contenido-brazo ?br ?cont) (contenido-transportador ?t ?cont ?ncontT) (capacidad-actual-transportador ?t ?cap)) 
+		( (brazo-dron-free ?d ?br) (contenido-transportador ?t ?cont (call + ?ncontT 1)) (capacidad-actual-transportador ?t (call + ?cap 1)))
+	)
+	
+	(:operator(!descargar-transportador ?d ?br ?t ?x)
+		( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+			(CONTENIDO ?cont) (brazo-dron-free ?d ?br) 
+			(contenido-transportador ?t ?cont ?ncontT) (call > ?ncontT 0) 
+			(capacidad-actual-transportador ?t ?cap)
+			)
+		( (brazo-dron-free ?d ?br) (capacidad-actual-transportador ?t ?cap) (contenido-transportador ?t ?cont ?ncontT))
+		( (capacidad-actual-transportador ?t (call - ?cap 1))  (contenido-transportador ?t ?cont (call - ?ncontT 1)) (contenido-brazo ?br ?cont))
+	) 
+		
+	
+
+	(:method (prueba)
+		(;prec enviar-todo solo el dron
+			(DRON ?d)(BRAZO ?br)
+			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
+			(call < ?ncont 2)
+			(call > ?ncont 0)
+		)(;subtasks enviar-todo
+			(take-more)
+			(enviar-carga) ; en caso de que el transportador no tenga cajas
+			(!move-dron ?d ?y ?x)
+			(prueba)
+		)
+		()
+		()
+	)
+	
+	(:method (take-more ?cont)
+		(;prec coger-mas
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(brazo-dron-free ?d ?br)
+			(cantidad-cajas ?cont ?num) 
+			(call > ?num 0)
+			(loc-dron ?d ?x)
+			(loc-cajas ?x)
+			(loc-necesita ?y ?numCont)
+		)(;subtask coger-mas
+			(!take-caja ?d ?br ?x ?cont)
+			(take-more ?cont)
+		)
+		()
+		()
+	)
+
+	(:method (llenar-transportador ?t ?cont)
+		(;prec
+			(loc-dron ?d ?x)
+			(BRAZO ?br)
+			(loc-transportador ?t ?x)
+			(capacidad-actual-transportador ?t ?cap)
+			(capacidad-max-transportador ?t ?nMax)
+			(call < ?cap ?nMax)
+		)( 
+			(take-more ?cont)
+			(!cargar-transportador ?d ?br ?t ?x)
+			(llenar-transportador ?t ?cont)
+		)
+		()
+		()
+	)
+	(:method (enviar-carga)
+		(;prec enviar carga
+			(DRON ?d)
+			(loc-dron ?d ?x)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(contenido-brazo ?br ?cont)
+			(call > ?nCont 0)
+		)(;acciones
+			(!move-dron ?d ?x ?y)
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga)
+		)
+		()
+		()
+	)
+	(:method (enviar-carga-transportador ?t)
+		(;prec
+			(DRON ?d)
+			(TRANSPORTADOR ?t)
+			(loc-dron ?d ?x)
+			(CONTENIDO ?cont)
+			(BRAZO ?br)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(capacidad-actual-transportador ?t ?cap)
+			(call > ?nCont 0)
+			(call > ?cap 0)
+		)(
+			(!move-dron-transportador ?d ?t ?x ?y)
+			(!descargar-transportador ?d ?br ?t ?y)
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga-transportador ?t)
+		)
+		()
+		()
+	)
+		
+	(:method (enviar-todo)
+		(;prec enviar-todo con transportador
+			:sort-by ?nCont > (
+			(DRON ?d)(BRAZO ?br)(transportador ?t)
+			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
+			(loc-necesita ?y ?numCont)
+			(call > ?numCont 1)
+			)
+			
+		)(;subtasks enviar-todo
+			(llenar-transportador ?t ?cont)
+			(enviar-carga-transportador ?t ) ;en caso de que el transportador tenga cajas
+			(!move-dron-transportador ?d ?t ?y ?x)
+			(enviar-todo)
+		)
+		(;prec enviar-todo solo el dron
+			(DRON ?d)(BRAZO ?br)
+			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
+			(loc-necesita ?y ?numCont)
+			(call < ?numCont 2)
+			(call > ?numCont 0)
+		)(;subtasks enviar-todo
+			(take-more ?cont)
+			(enviar-carga) ; en caso de que el transportador no tenga cajas
+			(!move-dron ?d ?y ?x)
+			(enviar-todo)
+		)
+		()
+		()
+	)
+			
+))
