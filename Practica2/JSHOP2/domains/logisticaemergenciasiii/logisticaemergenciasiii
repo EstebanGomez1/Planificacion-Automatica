@@ -116,7 +116,6 @@
 		(;prec
 			(DRON ?d)
 			(loc-dron ?d ?y)
-			(CONTENIDO ?cont)
 			(BRAZO ?br)
 			(loc-necesita-contenido ?y ?cont ?nCont)
 			(capacidad-actual-transportador ?t ?cap)

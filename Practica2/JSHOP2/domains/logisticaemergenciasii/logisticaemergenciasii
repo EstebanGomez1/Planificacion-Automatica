@@ -14,7 +14,7 @@
 		( (loc-dron ?d ?y) (loc-transportador ?t ?y) (coste-viaje (call + ?cap 50)) )
 	)
 		
-	(:operator (!take-caja ?d ?br ?x)
+	(:operator (!take-caja ?d ?br ?x ?cont)
 		((DRON ?d) (LOC ?x) (BRAZO ?br) (loc-dron ?d ?x) (loc-cajas ?x) (cantidad-cajas ?cont ?num) (brazo-dron-free ?d ?br) (call > ?num 0 ) )
 		((brazo-dron-free ?d ?br) (cantidad-cajas ?cont ?num) ) ;delete state
 		((cantidad-cajas ?cont (call - ?num 1)) (contenido-brazo ?br ?cont)  )				     ;add state
@@ -28,7 +28,7 @@
 	)
 	
 	(:operator(!cargar-transportador ?d ?br ?t ?x)
-		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) (BRAZO ?br)
 			(CONTENIDO ?cont) (contenido-brazo ?br ?cont) 
 			(contenido-transportador ?t ?cont ?ncontT)
 			(capacidad-actual-transportador ?t ?cap)
@@ -51,53 +51,53 @@
 		
 	
 
-	(:method (prueba)
-		(;prec enviar-todo solo el dron
-			(DRON ?d)(BRAZO ?br)
-			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
-			(call < ?ncont 2)
-			(call > ?ncont 0)
-		)(;subtasks enviar-todo
-			(take-more)
-			(enviar-carga) ; en caso de que el transportador no tenga cajas
-			(!move-dron ?d ?y ?x)
-			(prueba)
-		)
-		()
-		()
-	)
 	
-	(:method (take-more)
+	(:method (take-more ?y ?cont)
 		(;prec coger-mas
-			(loc-necesita-contenido ?y ?cont ?nCont)
 			(brazo-dron-free ?d ?br)
 			(cantidad-cajas ?cont ?num) 
 			(call > ?num 0)
 			(loc-dron ?d ?x)
 			(loc-cajas ?x)
-		)(;subtask coger-mas
-			(!take-caja ?d ?br ?x)
-			(take-more)
+			
+		)(;task coger-mas
+			(!take-caja ?d ?br ?x ?cont)
+			(take-more ?y ?cont)
 		)
 		()
 		()
 	)
-	(:method (llenar-transportador)
+
+
+	(:method (llenar-transportador ?br ?t ?x ?y)
 		(;prec
 			(loc-dron ?d ?x)
 			(loc-transportador ?t ?x)
 			(capacidad-actual-transportador ?t ?cap)
 			(capacidad-max-transportador ?t ?nMax)
 			(call < ?cap ?nMax)
-		)( 
-			(take-more)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(contenido-transportador ?t ?cont ?ncontT)
+			(call < ?nContT ?nCont)
+		)(;task
+			(take-more ?y ?cont)
 			(!cargar-transportador ?d ?br ?t ?x)
-			(llenar-transportador)
+			(llenar-transportador ?br ?t ?x ?y)
 		)
 		()
 		()
 	)
 	(:method (enviar-carga)
+		(;prec enviar carga
+			(DRON ?d)
+			(loc-dron ?d ?y)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(contenido-brazo ?br ?cont)
+			(call > ?nCont 0)
+		)(;acciones
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga)
+		)
 		(;prec enviar carga
 			(DRON ?d)
 			(loc-dron ?d ?x)
@@ -112,10 +112,22 @@
 		()
 		()
 	)
-	(:method (enviar-carga-transportador)
+	(:method (enviar-carga-transportador ?t ?y)
 		(;prec
 			(DRON ?d)
-			(TRANSPORTADOR ?t)
+			(loc-dron ?d ?y)
+			(BRAZO ?br)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(capacidad-actual-transportador ?t ?cap)
+			(call > ?nCont 0)
+			(call > ?cap 0)
+		)(;task
+			(!descargar-transportador ?d ?br ?t ?y)
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga-transportador ?t ?y)
+		)
+		(;prec
+			(DRON ?d)
 			(loc-dron ?d ?x)
 			(CONTENIDO ?cont)
 			(BRAZO ?br)
@@ -123,11 +135,11 @@
 			(capacidad-actual-transportador ?t ?cap)
 			(call > ?nCont 0)
 			(call > ?cap 0)
-		)(
+		)(;task
 			(!move-dron-transportador ?d ?t ?x ?y)
 			(!descargar-transportador ?d ?br ?t ?y)
 			(!drop-caja ?d ?br ?cont ?y)
-			(enviar-carga-transportador)
+			(enviar-carga-transportador ?t ?y)
 		)
 		()
 		()
@@ -140,8 +152,8 @@
 			(loc-necesita ?y ?numCont)
 			(call > ?numCont 1)
 		)(;subtasks enviar-todo
-			(llenar-transportador)
-			(enviar-carga-transportador) ;en caso de que el transportador tenga cajas
+			(llenar-transportador ?br ?t ?x ?y)
+			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
 			(!move-dron-transportador ?d ?t ?y ?x)
 			(enviar-todo)
 		)
@@ -152,7 +164,7 @@
 			(call < ?numCont 2)
 			(call > ?numCont 0)
 		)(;subtasks enviar-todo
-			(take-more)
+			(take-more ?y ?cont)
 			(enviar-carga) ; en caso de que el transportador no tenga cajas
 			(!move-dron ?d ?y ?x)
 			(enviar-todo)
