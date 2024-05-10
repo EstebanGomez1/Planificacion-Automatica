@@ -60,7 +60,7 @@
 			(loc-dron ?d ?x)
 			(loc-cajas ?x)
 			
-		)(;subtask coger-mas
+		)(;task coger-mas
 			(!take-caja ?d ?br ?x ?cont)
 			(take-more ?y ?cont)
 		)
@@ -72,16 +72,14 @@
 	(:method (llenar-transportador ?br ?t ?x ?y)
 		(;prec
 			(loc-dron ?d ?x)
-			(BRAZO ?br)
 			(loc-transportador ?t ?x)
 			(capacidad-actual-transportador ?t ?cap)
 			(capacidad-max-transportador ?t ?nMax)
-			(loc-necesita ?y ?numCont)
 			(call < ?cap ?nMax)
 			(loc-necesita-contenido ?y ?cont ?nCont)
 			(contenido-transportador ?t ?cont ?ncontT)
 			(call < ?nContT ?nCont)
-		)( 
+		)(;task
 			(take-more ?y ?cont)
 			(!cargar-transportador ?d ?br ?t ?x)
 			(llenar-transportador ?br ?t ?x ?y)
@@ -117,7 +115,6 @@
 	(:method (enviar-carga-transportador ?t ?y)
 		(;prec
 			(DRON ?d)
-			(TRANSPORTADOR ?t)
 			(loc-dron ?d ?y)
 			(CONTENIDO ?cont)
 			(BRAZO ?br)
@@ -125,14 +122,13 @@
 			(capacidad-actual-transportador ?t ?cap)
 			(call > ?nCont 0)
 			(call > ?cap 0)
-		)(
+		)(;task
 			(!descargar-transportador ?d ?br ?t ?y)
 			(!drop-caja ?d ?br ?cont ?y)
 			(enviar-carga-transportador ?t ?y)
 		)
 		(;prec
 			(DRON ?d)
-			(TRANSPORTADOR ?t)
 			(loc-dron ?d ?x)
 			(CONTENIDO ?cont)
 			(BRAZO ?br)
@@ -140,7 +136,7 @@
 			(capacidad-actual-transportador ?t ?cap)
 			(call > ?nCont 0)
 			(call > ?cap 0)
-		)(
+		)(;task
 			(!move-dron-transportador ?d ?t ?x ?y)
 			(!descargar-transportador ?d ?br ?t ?y)
 			(!drop-caja ?d ?br ?cont ?y)
@@ -151,13 +147,13 @@
 	)
 
 	(:method (elegir-transportador-y-acciones ?x ?y ?d ?br)
-		(
+		(;prec
 			:sort-by ?nMax < (
 			(loc-necesita ?y ?numCont)
 			(capacidad-max-transportador ?t ?nMax)
 			(call >= ?nMax ?numCont)
 			)
-		)(
+		)(;task
 			(llenar-transportador ?br ?t ?x ?y)
 			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
 			(!move-dron-transportador ?d ?t ?y ?x)
