@@ -250,13 +250,13 @@ def main():
     need = setup_person_needs(options, crates_with_contents)
 
     # Define a problem name
-    problem_name = "problem1"
+    problem_name = "problem"+str(options.goals)+"metas"
 
     # Open output file
     with open(problem_name, 'w') as f:
         # Write the initial part of the problem
 
-        f.write("(defproblem "+problem_name+" logisticaemergencias \n")
+        f.write("(defproblem problem logisticaemergencias \n")
         f.write("\t(;Initial state\n")
 
         ######################################################################
@@ -289,8 +289,7 @@ def main():
         # TODO: Initialize all facts here!
             
         #localizacion del dron 
-        localizacion_dron = random.choice(loc)
-        f.write(f"\t\t(loc-dron dron1 {localizacion_dron})\n")
+        f.write(f"\t\t(loc-dron dron1 deposito)\n")
 
         #localizacion de personas, cajas y contenidos 
         #contenido = random.choice(content_types)

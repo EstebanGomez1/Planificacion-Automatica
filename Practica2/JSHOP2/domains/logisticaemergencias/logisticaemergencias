@@ -13,7 +13,8 @@
         	((carry-caja ?d ?br ?c))				     ;add state
         )	
         (:operator(!drop-caja ?c ?d ?br ?cont ?p ?l)
-        	((CAJA ?c) (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (PERSONA ?p) (LOC ?x) (persona-necesita-contenido ?p ?cont) (caja-contenido ?c ?cont) (loc-dron ?d ?l) (carry-caja ?d ?br ?c) (loc-persona ?p ?l))
+        	((CAJA ?c) (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (PERSONA ?p) (LOC ?x) (persona-necesita-contenido ?p ?cont) 
+			(caja-contenido ?c ?cont) (loc-dron ?d ?l) (carry-caja ?d ?br ?c) (loc-persona ?p ?l))
         	((carry-caja ?d ?br ?c) (persona-necesita-contenido ?p ?cont))
         	((loc-caja ?c ?l) (brazo-dron-free ?d ?br) (persona-tiene-caja ?p ?c) (persona-tiene-cont ?p ?cont))
 	)
@@ -22,7 +23,7 @@
 			(persona-necesita-contenido ?p ?cont)
 			(brazo-dron-free ?d ?br)
 			(caja-free ?c)
-			(loc-caja ?c ?l1)
+			(loc-caja ?c ?l)
 			(loc-dron ?d ?l)
 		)(;subtask coger-mas
 			(!take-caja ?c ?d ?br ?l)
@@ -32,8 +33,19 @@
 		()
 	)
 	(:method (enviar-carga)
-		(;prec enviar carga
+		(;prec enviar carga loc dron  = loc persona 
 			(DRON ?d)
+			(carry-caja ?d ?br ?c)
+			(loc-dron ?d ?y)
+			(loc-persona ?p ?y)
+			(caja-contenido ?c ?cont)
+			(persona-necesita-contenido ?p ?cont)
+		)(;acciones
+			(!drop-caja ?c ?d ?br ?cont ?p ?y)
+			(enviar-carga)
+		)
+		(;prec enviar carga
+			(DRON ?d) (Loc ?l) (Loc ?y)
 			(carry-caja ?d ?br ?c)
 			(loc-dron ?d ?l)
 			(loc-persona ?p ?y)
@@ -50,7 +62,9 @@
 	(:method (enviar-todo)
 		(;prec enviar-todo
 			(DRON ?d)(BRAZO ?br)
-			(loc-dron ?d ?l)(persona-necesita-contenido ?p ?cont)(brazo-dron-free ?d ?br)
+			(loc-dron ?d ?l)
+			(persona-necesita-contenido ?p ?cont)
+			(brazo-dron-free ?d ?br)
 		)(;subtasks enviar-todo
 			(take-more)
 			(enviar-carga)
