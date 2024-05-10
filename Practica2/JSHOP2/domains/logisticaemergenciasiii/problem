@@ -2,8 +2,29 @@
 	(;Initial state
 		(DRON dron1) (LOC a) (LOC b) (LOC c) (LOC d) (LOC deposito)
 		(BRAZO brazo1)
-		(TRANSPORTADOR t1)
-		(TRNASPORTADOR t2)
+		(TRANSPORTADOR t3)
+		(TRANSPORTADOR t2)
+		(TRANSPORTADOR t4)
+
+		(loc-transportador t3 deposito)
+		(loc-transportador t2 deposito)
+		(loc-transportador t4 deposito)
+		
+		(capacidad-max-transportador t3 4)
+		(capacidad-actual-transportador t3 0)
+		(capacidad-max-transportador t2 8)
+		(capacidad-actual-transportador t2 0)
+		(capacidad-max-transportador t4 20)
+		(capacidad-actual-transportador t4 0)
+
+
+		(contenido-transportador t3 comida 0)
+		(contenido-transportador t3 medicina 0)
+		(contenido-transportador t2 comida 0)
+		(contenido-transportador t2 medicina 0)
+		(contenido-transportador t4 comida 0)
+		(contenido-transportador t4 medicina 0)
+		
 		(CONTENIDO medicina)
 		(CONTENIDO comida)
 		(cantidad-cajas medicina 5)
@@ -11,22 +32,15 @@
 		(cantidad-cajas bebida 3)
 		(loc-cajas deposito)
 		(loc-dron dron1 deposito)
-		(loc-transportador t1 deposito)
-		(loc-transportador t2 deposito)
 		(brazo-dron-free dron1 brazo1)
-		(loc-necesita-contenido a comida 2)
+		(loc-necesita-contenido b comida 2)
 		(loc-necesita-contenido b medicina 3)
-		(loc-necesita a 2)
-		(loc-necesita b 3)
-		(capacidad-max-transportador t1 2)
-		(capacidad-actual-transportador t1 0)
-		(capacidad-max-transportador t2 4)
-		(capacidad-actual-transportador t2 0)
+		(loc-necesita-contenido a comida 1)
+		(loc-necesita a 1)
+		(loc-necesita b 5)
+
 		(coste-viaje 0)
-		(contenido-transportador t1 comida 0)
-		(contenido-transportador t1 medicina 0)
-		(contenido-transportador t2 comida 0)
-		(contenido-transportador t2 medicina 0)
+
 
 	)(;Task to solve
 		(enviar-todo)

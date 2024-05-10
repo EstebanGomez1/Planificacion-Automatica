@@ -28,7 +28,7 @@
 	)
 	
 	(:operator(!cargar-transportador ?d ?br ?t ?x)
-		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) (BRAZO ?br)
 			(CONTENIDO ?cont) (contenido-brazo ?br ?cont) 
 			(contenido-transportador ?t ?cont ?ncontT)
 			(capacidad-actual-transportador ?t ?cap)
@@ -51,56 +51,55 @@
 		
 	
 
-	(:method (prueba)
-		(;prec enviar-todo solo el dron
-			(DRON ?d)(BRAZO ?br)
-			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
-			(call < ?ncont 2)
-			(call > ?ncont 0)
-		)(;subtasks enviar-todo
-			(take-more)
-			(enviar-carga) ; en caso de que el transportador no tenga cajas
-			(!move-dron ?d ?y ?x)
-			(prueba)
-		)
-		()
-		()
-	)
 	
-	(:method (take-more ?cont)
+	(:method (take-more ?y ?cont)
 		(;prec coger-mas
-			(loc-necesita-contenido ?y ?cont ?nCont)
 			(brazo-dron-free ?d ?br)
 			(cantidad-cajas ?cont ?num) 
 			(call > ?num 0)
 			(loc-dron ?d ?x)
 			(loc-cajas ?x)
-			(loc-necesita ?y ?numCont)
+			
 		)(;subtask coger-mas
 			(!take-caja ?d ?br ?x ?cont)
-			(take-more ?cont)
+			(take-more ?y ?cont)
 		)
 		()
 		()
 	)
 
-	(:method (llenar-transportador ?t ?cont)
+
+	(:method (llenar-transportador ?br ?t ?x ?y)
 		(;prec
 			(loc-dron ?d ?x)
 			(BRAZO ?br)
 			(loc-transportador ?t ?x)
 			(capacidad-actual-transportador ?t ?cap)
 			(capacidad-max-transportador ?t ?nMax)
+			(loc-necesita ?y ?numCont)
 			(call < ?cap ?nMax)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(contenido-transportador ?t ?cont ?ncontT)
+			(call < ?nContT ?nCont)
 		)( 
-			(take-more ?cont)
+			(take-more ?y ?cont)
 			(!cargar-transportador ?d ?br ?t ?x)
-			(llenar-transportador ?t ?cont)
+			(llenar-transportador ?br ?t ?x ?y)
 		)
 		()
 		()
 	)
 	(:method (enviar-carga)
+		(;prec enviar carga
+			(DRON ?d)
+			(loc-dron ?d ?y)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(contenido-brazo ?br ?cont)
+			(call > ?nCont 0)
+		)(;acciones
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga)
+		)
 		(;prec enviar carga
 			(DRON ?d)
 			(loc-dron ?d ?x)
@@ -115,7 +114,22 @@
 		()
 		()
 	)
-	(:method (enviar-carga-transportador ?t)
+	(:method (enviar-carga-transportador ?t ?y)
+		(;prec
+			(DRON ?d)
+			(TRANSPORTADOR ?t)
+			(loc-dron ?d ?y)
+			(CONTENIDO ?cont)
+			(BRAZO ?br)
+			(loc-necesita-contenido ?y ?cont ?nCont)
+			(capacidad-actual-transportador ?t ?cap)
+			(call > ?nCont 0)
+			(call > ?cap 0)
+		)(
+			(!descargar-transportador ?d ?br ?t ?y)
+			(!drop-caja ?d ?br ?cont ?y)
+			(enviar-carga-transportador ?t ?y)
+		)
 		(;prec
 			(DRON ?d)
 			(TRANSPORTADOR ?t)
@@ -130,25 +144,40 @@
 			(!move-dron-transportador ?d ?t ?x ?y)
 			(!descargar-transportador ?d ?br ?t ?y)
 			(!drop-caja ?d ?br ?cont ?y)
-			(enviar-carga-transportador ?t)
+			(enviar-carga-transportador ?t ?y)
 		)
 		()
 		()
 	)
+
+	(:method (elegir-transportador-y-acciones ?x ?y ?d ?br)
+		(
+			:sort-by ?nMax < (
+			(loc-necesita ?y ?numCont)
+			(capacidad-max-transportador ?t ?nMax)
+			(call >= ?nMax ?numCont)
+			)
+		)(
+			(llenar-transportador ?br ?t ?x ?y)
+			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
+			(!move-dron-transportador ?d ?t ?y ?x)
+		)
+		()
+		()
+	)
+	
 		
 	(:method (enviar-todo)
 		(;prec enviar-todo con transportador
-			:sort-by ?nCont > (
-			(DRON ?d)(BRAZO ?br)(transportador ?t)
+			:sort-by ?numCont > (
+			(DRON ?d)(BRAZO ?br)
 			(loc-dron ?d ?x)(loc-necesita-contenido ?y ?cont ?nCont)(brazo-dron-free ?d ?br)
 			(loc-necesita ?y ?numCont)
 			(call > ?numCont 1)
-			)
 			
+			)
 		)(;subtasks enviar-todo
-			(llenar-transportador ?t ?cont)
-			(enviar-carga-transportador ?t ) ;en caso de que el transportador tenga cajas
-			(!move-dron-transportador ?d ?t ?y ?x)
+			(elegir-transportador-y-acciones ?x ?y ?d ?br)
 			(enviar-todo)
 		)
 		(;prec enviar-todo solo el dron
@@ -158,7 +187,7 @@
 			(call < ?numCont 2)
 			(call > ?numCont 0)
 		)(;subtasks enviar-todo
-			(take-more ?cont)
+			(take-more ?y ?cont)
 			(enviar-carga) ; en caso de que el transportador no tenga cajas
 			(!move-dron ?d ?y ?x)
 			(enviar-todo)
