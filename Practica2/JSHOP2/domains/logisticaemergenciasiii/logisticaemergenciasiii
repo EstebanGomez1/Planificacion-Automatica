@@ -154,7 +154,7 @@
 			)
 		)(;task
 			(llenar-transportador ?br ?t ?x ?y)
-			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
+			(enviar-carga-transportador ?t ?y) 
 			(!move-dron-transportador ?d ?t ?y ?x)
 		)
 		(;prec
@@ -164,7 +164,7 @@
 
 		)(;task
 			(llenar-transportador ?br ?t ?x ?y)
-			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
+			(enviar-carga-transportador ?t ?y)
 			(!move-dron-transportador ?d ?t ?y ?x)
 		)
 		()
@@ -193,7 +193,7 @@
 			(call > ?numCont 0)
 		)(;subtasks enviar-todo
 			(take-more ?y ?cont)
-			(enviar-carga) ; en caso de que el transportador no tenga cajas
+			(enviar-carga)
 			(!move-dron ?d ?y ?x)
 			(enviar-todo)
 		)
