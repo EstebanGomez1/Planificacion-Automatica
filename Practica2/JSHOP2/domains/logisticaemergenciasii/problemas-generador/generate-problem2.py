@@ -252,11 +252,19 @@ def main():
 
         for x in loc:
             f.write("\t\t(LOC " + x + ")\n")
+        
+        for x in content_types:
+            f.write("\t\t(CONTENIDO " + x + ")\n")
+        
+        f.write("\t\t(BRAZO brazo1)\n")
 
+        for x in dron:
+            f.write(f"\t\t(loc-dron {x} deposito)\n")
         k=0
         for x in carrier:
             if(cap_list[k]!=None):
                 f.write("\n\t\t(Transportador " + x + ")\n")
+                f.write("\t\t(loc-transportador "+ x + " deposito)\n")
                 f.write("\t\t(capacidad-max-transportador " + x + " " + cap_list[k] + ")\n")
                 f.write("\t\t(capacidad-actual-transportador " + x + " 0)\n")
                 for y in content_types:
@@ -292,9 +300,9 @@ def main():
             if(lista[i]!=0):
                 f.write("\t\t(loc-necesita Loc" + str(i) + " " + str(lista[i]) + ")\n")
         
-        f.write(f"\t\t(cantidad-cajas comida {totalcomida})\n")
-        f.write(f"\t\t(cantidad-cajas medicina {totalmedicina})\n")
-        f.write("\t\t(BRAZO brazo1)\n")
+        f.write(f"\t\t(cantidad-cajas comida {totalcomida+10})\n")
+        f.write(f"\t\t(cantidad-cajas medicina {totalmedicina+10})\n")
+        f.write("\t\t(brazo-dron-free dron1 brazo1)\n")
         f.write("\t\t(loc-cajas deposito)\n")
         f.write("\t\t(coste-viaje 0)\n")
 
