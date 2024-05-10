@@ -284,8 +284,8 @@ def main():
         for i in range(len(loc)+1):
             lista.append(0)
         
-        for x in range(args.goals//2):
-            cajasporintento = math.ceil(len(caja)//(args.goals//2))
+        for x in range(args.goals):
+            cajasporintento = math.ceil(len(caja)//(args.goals))
             cajascomida = random.randint(1,cajasporintento)
             cajasmedicina = cajasporintento-cajascomida
             l = random.randint(1,len(loc))
