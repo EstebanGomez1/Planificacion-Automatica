@@ -1,13 +1,11 @@
-(defproblem problem1 logisticaemergenciasii 
+(defproblem problem logisticaemergenciasii 
 	(;Initial state
-		(DRON dron1)
-		(LOC deposito)
-		(LOC Loc1)
-		(LOC Loc2)
+		(DRON dron1) (LOC deposito) (LOC Loc1) (LOC Loc2) 
 		(Transportador transportador1)
 		(CONTENIDO comida)
 		(CONTENIDO medicina)
 		(BRAZO brazo1)
+		
 		(loc-dron dron1 deposito)
 		(loc-transportador transportador1 deposito)
 		(capacidad-max-transportador transportador1 2)

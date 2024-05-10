@@ -10,7 +10,7 @@
 ########################################################################################
 
 
-from optparse import OptionParser
+import argparse
 import random
 import math
 import sys
@@ -151,190 +151,160 @@ def setup_person_needs(options, crates_with_contents):
 ########################################################################################
 
 def main():
-    # Take in all arguments and print them to standard output
-
-    parser = OptionParser(usage='python generator.py [-help] options...')
-    parser.add_option('-d', '--drones', metavar='NUM', dest='drones', action='store', type=int, help='the number of drones')
-    parser.add_option('-r', '--carriers', metavar='NUM', type=int, dest='carriers',
+    parser = argparse.ArgumentParser(usage='python generator.py [-h] options...')
+    parser.add_argument('-d', '--drones', metavar='NUM', dest='drones', action='store', type=int, help='the number of drones')
+    parser.add_argument('-r', '--carriers', metavar='NUM', type=int, dest='carriers',
                       help='the number of carriers, for later labs; use 0 for no carriers')
-    parser.add_option('-l', '--locations', metavar='NUM', type=int, dest='locations',
+    parser.add_argument('-l', '--locations', metavar='NUM', type=int, dest='locations',
                       help='the number of locations apart from the depot ')
-    parser.add_option('-p', '--persons', metavar='NUM', type=int, dest='persons', help='the number of persons')
-    parser.add_option('-c', '--crates', metavar='NUM', type=int, dest='crates', help='the number of crates available')
-    parser.add_option('-g', '--goals', metavar='NUM', type=int, dest='goals',
-                      help='the number of crates assigned in the goal')
+    parser.add_argument('-p', '--persons', metavar='NUM', type=int, dest='persons', help='the number of persons')
+    parser.add_argument('-c', '--crates', metavar='NUM', type=int, dest='crates', help='the number of crates available')
+    parser.add_argument('-g', '--goals', metavar='NUM', type=int, dest='goals', help='the number of crates assigned in the goal')
+    parser.add_argument('--cap', metavar='NUM', type=str, dest='cap', help='the number of capacidades separated by commas')
+    args = parser.parse_args()
 
-    (options, args) = parser.parse_args()
-
-    if options.drones is None:
+    cap_list = args.cap.split(',')
+    if args.cap is None:
+        print("Especifique las capacidades de los transportadores por favor, opcion --cap")
+        sys.exit(1)
+    
+    if args.drones is None:
         print("You must specify --drones (use --help for help)")
         sys.exit(1)
 
-    if options.carriers is None:
+    if args.carriers is None:
         print("You must specify --carriers (use --help for help)")
         sys.exit(1)
 
-    if options.locations is None:
+    if args.locations is None:
         print("You must specify --locations (use --help for help)")
         sys.exit(1)
 
-    if options.persons is None:
+    if args.persons is None:
         print("You must specify --persons (use --help for help)")
         sys.exit(1)
 
-    if options.crates is None:
+    if args.crates is None:
         print("You must specify --crates (use --help for help)")
         sys.exit(1)
 
-    if options.goals is None:
+    if args.goals is None:
         print("You must specify --goals (use --help for help)")
         sys.exit(1)
 
-    if options.goals > options.crates:
+    if args.goals > args.crates:
         print("Cannot have more goals than crates")
         sys.exit(1)
 
-    if len(content_types) > options.crates:
+    content_types = ["comida", "medicina"]
+
+    if len(content_types) > args.crates:
         print("Cannot have more content types than crates:", content_types)
         sys.exit(1)
 
-    if options.goals > len(content_types) * options.persons:
-        print("For", options.persons, "persons, you can have at most", len(content_types) * options.persons, "goals")
+    if args.goals > len(content_types) * args.persons:
+        print("For", args.persons, "persons, you can have at most", len(content_types) * args.persons, "goals")
         sys.exit(1)
 
-    print("Drones\t\t", options.drones)
-    print("Carriers\t", options.carriers)
-    print("Locations\t", options.locations)
-    print("Persons\t\t", options.persons)
-    print("Crates\t\t", options.crates)
-    print("Goals\t\t", options.goals)
+    if (args.carriers != len(cap_list)):
+        print("numero distinto de capacidades y transportadores")
+        sys.exit(1)
 
-    # Setup all lists of objects
-
-    # These lists contain the names of all Drones, locations, and so on.
+    print("Drones\t\t", args.drones)
+    print("Carriers\t", args.carriers)
+    print("Locations\t", args.locations)
+    print("Persons\t\t", args.persons)
+    print("Crates\t\t", args.crates)
+    print("Goals\t\t", args.goals)
 
     dron = []
     persona = []
     caja = []
     carrier = []
     loc = []
+    
+
     y=65
     loc.append("deposito")
-    for x in range(options.locations):
-        loc.append("Loc"+str(x+1))
-        
-    for x in range(options.drones):
+    for x in range(args.locations):
+        loc.append("Loc"+str(x+1))  
+    for x in range(args.drones):
         dron.append("dron" + str(x + 1))
-    for x in range(options.carriers):
-        carrier.append("transportador" + str(x + 1))
-    for x in range(options.persons):
+    for x in range(args.carriers):
+        carrier.append("t" + str(x + 1))
+    for x in range(args.persons):
         persona.append("persona" + str(x + 0))
-    for x in range(options.crates):
+    for x in range(args.crates):
         caja.append("caja" + str(x + 1))
     
-    # Determine the set of crates for each content.
-    # If content_types[0] is "food",
-    # then crates_with_contents[0] is a list
-    # containing the names of all crates that contain food.
-    crates_with_contents = setup_content_types(options)
-
-    # Generates coordinates for each location.
-    # You will only use this indirectly,
-    # through the flight_cost() function in lab 2.
-    location_coords = setup_location_coords(options)
-
-    # Determine which types of content each person needs.
-    # If person[0] is "person0",
-    # and content_types[1] is "medicine",
-    # then needs[0][1] is true if person0 needs medicine.
-    need = setup_person_needs(options, crates_with_contents)
-
     # Define a problem name
-    problem_name = "problem1"
+    problem_name = "problem"+str(args.goals)+"metas"
 
     # Open output file
     with open(problem_name, 'w') as f:
         # Write the initial part of the problem
-
-        f.write("(defproblem "+problem_name+" logisticaemergenciasii \n")
+        f.write("(defproblem problem logisticaemergenciasii \n")
         f.write("\t(;Initial state\n")
 
-        ######################################################################
         # Write objects
-
-        # TODO: Change the type names below (drone, location, ...)
-        # to suit your domain.
-
         for x in dron:
             f.write("\t\t(DRON " + x + ")\n")
 
         for x in loc:
             f.write("\t\t(LOC " + x + ")\n")
 
+        k=0
         for x in carrier:
-            f.write("\t\t(Transportador " + x + ")\n")
-
-        for x in content_types:
-            f.write("\t\t(CONTENIDO " + x + ")\n")
-
-        #for x in persona:
-        #    f.write("\t\t(PERSONA " + x + ")\n")
-
-        f.write("\t\t(BRAZO brazo1)\n")
-
-        ######################################################################
-        # Generate an initial state
-
-
-        # TODO: Initialize all facts here!
-            
-        #localizacion del dron 
-        for x in dron:
-            f.write(f"\t\t(loc-dron {x} deposito)\n")
-
-        for x in carrier:
-            f.write(f"\t\t(loc-transportador {x} deposito)\n")
-            f.write(f"\t\t(capacidad-max-transportador {x} {random.randint(2,4)})\n")
-            f.write(f"\t\t(capacidad-actual-transportador {x} 0)\n")
-            for y in content_types:
-                f.write(f"\t\t(contenido-transportador {x} {y} 0)\n")
-        
-        f.write(f"\t\t(brazo-dron-free dron1 brazo1)\n")
-        f.write(f"\t\t(loc-cajas deposito)\n")
-        f.write(f"\t\t(coste-viaje 0)\n")
+            if(cap_list[k]!=None):
+                f.write("\n\t\t(Transportador " + x + ")\n")
+                f.write("\t\t(capacidad-max-transportador " + x + " " + cap_list[k] + ")\n")
+                f.write("\t\t(capacidad-actual-transportador " + x + " 0)\n")
+                for y in content_types:
+                    f.write("\t\t(contenido-transportador " + x + " " + y + " 0)\n")
+            else:
+                f.write("\t\t(Transportador " + x + ")\n")
+                f.write("\t\t(capacidad-max-transportador " + x + " " + str(random.randint(5,10)) + ")\n")
+                f.write("\t\t(capacidad-actual-transportador " + x + " 0)\n")
+                for y in content_types:
+                    f.write("\t\t(contenido-transportador " + x + " " + y + " 0)\n")
+            k+=1
 
         lista = []
-        cajascomida = random.randint(1,len(caja)/options.goals)
-        cajasmedicina = random.randint(1,len(caja)/options.goals+1)
+        totalcomida = 0
+        totalmedicina = 0
 
-        num_total = cajascomida+cajasmedicina
         for i in range(len(loc)+1):
             lista.append(0)
         
-        for x in range(options.goals):
+        for x in range(args.goals//2):
+            cajasporintento = math.ceil(len(caja)//(args.goals//2))
+            cajascomida = random.randint(1,cajasporintento)
+            cajasmedicina = cajasporintento-cajascomida
             l = random.randint(1,len(loc))
-            if(random.randint(0,1)):
-                f.write(f"\t\t(loc-necesita-contenido Loc{l} comida {cajascomida})\n") 
-                lista[l]=lista[l]+cajascomida
-            else:
-                f.write(f"\t\t(loc-necesita-contenido Loc{l} medicina {cajasmedicina})\n") 
-                lista[l]=lista[l]+cajasmedicina      
+            f.write("\t\t(loc-necesita-contenido Loc" + str(l) + " comida " + str(cajascomida) + ")\n") 
+            lista[l]=lista[l]+cajascomida
+            totalcomida += cajascomida
+            f.write("\t\t(loc-necesita-contenido Loc" + str(l) + " medicina " + str(cajasmedicina) + ")\n") 
+            lista[l]=lista[l]+cajasmedicina  
+            totalmedicina += cajasmedicina    
 
         for i in range(len(lista)):
             if(lista[i]!=0):
-                f.write(f"\t\t(loc-necesita Loc{i} {lista[i]})\n")
-            
+                f.write("\t\t(loc-necesita Loc" + str(i) + " " + str(lista[i]) + ")\n")
+        
+        f.write(f"\t\t(cantidad-cajas comida {totalcomida})\n")
+        f.write(f"\t\t(cantidad-cajas medicina {totalmedicina})\n")
+        f.write("\t\t(BRAZO brazo1)\n")
+        f.write("\t\t(loc-cajas deposito)\n")
+        f.write("\t\t(coste-viaje 0)\n")
+
         f.write("\t)\n")
 
-        ######################################################################
         # Write Goals
-
         f.write("\t(;Task to solve\n")
-
-        # All Drones should end up at the depot
         f.write("\t\t(enviar-todo)")
         f.write("\n\t)")
         f.write("\n)")
-                
+
 if __name__ == '__main__':
     main()
