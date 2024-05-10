@@ -12,9 +12,9 @@
 		
 		(capacidad-max-transportador t3 4)
 		(capacidad-actual-transportador t3 0)
-		(capacidad-max-transportador t2 8)
+		(capacidad-max-transportador t2 3)
 		(capacidad-actual-transportador t2 0)
-		(capacidad-max-transportador t4 20)
+		(capacidad-max-transportador t4 5)
 		(capacidad-actual-transportador t4 0)
 
 
@@ -27,17 +27,17 @@
 		
 		(CONTENIDO medicina)
 		(CONTENIDO comida)
-		(cantidad-cajas medicina 5)
+		(cantidad-cajas medicina 12)
 		(cantidad-cajas comida 22)
 		(cantidad-cajas bebida 3)
 		(loc-cajas deposito)
 		(loc-dron dron1 deposito)
 		(brazo-dron-free dron1 brazo1)
 		(loc-necesita-contenido b comida 2)
-		(loc-necesita-contenido b medicina 3)
+		(loc-necesita-contenido b medicina 8)
 		(loc-necesita-contenido a comida 3)
 		(loc-necesita a 3)
-		(loc-necesita b 5)
+		(loc-necesita b 10)
 
 		(coste-viaje 0)
 

@@ -157,6 +157,16 @@
 			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
 			(!move-dron-transportador ?d ?t ?y ?x)
 		)
+		(;prec
+			:sort-by ?nMax > (
+			(capacidad-max-transportador ?t ?nMax)
+			)
+
+		)(;task
+			(llenar-transportador ?br ?t ?x ?y)
+			(enviar-carga-transportador ?t ?y) ;en caso de que el transportador tenga cajas
+			(!move-dron-transportador ?d ?t ?y ?x)
+		)
 		()
 		()
 	)
