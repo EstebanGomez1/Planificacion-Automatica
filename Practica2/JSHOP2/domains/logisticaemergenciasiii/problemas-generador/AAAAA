@@ -1,4 +1,4 @@
-(defproblem problem logisticaemergenciasii
+(defproblem problem logisticaemergenciasiii
 	(;Initial state
 		(DRON dron1) (LOC a) (LOC b) (LOC c) (LOC d) (LOC deposito)
 		(BRAZO brazo1)
@@ -12,7 +12,7 @@
 		
 		(capacidad-max-transportador t3 4)
 		(capacidad-actual-transportador t3 0)
-		(capacidad-max-transportador t2 8)
+		(capacidad-max-transportador t2 3)
 		(capacidad-actual-transportador t2 0)
 		(capacidad-max-transportador t4 5)
 		(capacidad-actual-transportador t4 0)

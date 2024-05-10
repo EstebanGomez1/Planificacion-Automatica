@@ -3,32 +3,32 @@
 (defdomain logisticaemergenciasiii (
 
 	(:operator (!move-dron ?d ?x ?y)                         ;param
-		((DRON ?d)  (LOC ?x)  (LOC ?y)  (loc-dron ?d ?x) (coste-viaje ?cost) ) ;prec	
+		((loc-dron ?d ?x) (coste-viaje ?cost) ) ;prec	
 		((loc-dron ?d ?x)(coste-viaje ?cost)) ;delete
 		((loc-dron ?d ?y) (coste-viaje (call + ?cost 50)) ) ;add
 	)
 	
 	(:operator (!move-dron-transportador ?d ?t ?x ?y)
-		( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (LOC ?y) (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost) (capacidad-actual-transportador ?t ?cap) )
+		( (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost) (capacidad-actual-transportador ?t ?cap) )
 		( (loc-dron ?d ?x) (loc-transportador ?t ?x) (coste-viaje ?cost))
 		( (loc-dron ?d ?y) (loc-transportador ?t ?y) (coste-viaje (call + ?cap 50)) )
 	)
 		
 	(:operator (!take-caja ?d ?br ?x ?cont)
-		((DRON ?d) (LOC ?x) (BRAZO ?br) (loc-dron ?d ?x) (loc-cajas ?x) (cantidad-cajas ?cont ?num) (brazo-dron-free ?d ?br) (call > ?num 0 ) )
+		((loc-dron ?d ?x) (loc-cajas ?x) (cantidad-cajas ?cont ?num) (brazo-dron-free ?d ?br) (call > ?num 0 ) )
 		((brazo-dron-free ?d ?br) (cantidad-cajas ?cont ?num) ) ;delete state
 		((cantidad-cajas ?cont (call - ?num 1)) (contenido-brazo ?br ?cont)  )				     ;add state
 	)	
 	
 	(:operator(!drop-caja ?d ?br ?cont ?x)
-        	( (DRON ?d) (BRAZO ?br) (CONTENIDO ?cont) (LOC ?x) (loc-necesita-contenido ?x ?cont ?nCont) (loc-dron ?d ?x) (contenido-brazo ?br ?cont) (call > ?nCont 0) 
+        	(  (loc-necesita-contenido ?x ?cont ?nCont) (loc-dron ?d ?x) (contenido-brazo ?br ?cont) (call > ?nCont 0) 
 				(loc-necesita ?x ?numCont))
         	((contenido-brazo ?br ?cont) (loc-necesita-contenido ?x ?cont ?nCont) (loc-necesita ?x ?numCont) )
         	((brazo-dron-free ?d ?br) (loc-necesita-contenido ?x ?cont (call - ?nCont 1)) (loc-necesita ?x (call - ?numCont 1)) )
 	)
 	
 	(:operator(!cargar-transportador ?d ?br ?t ?x)
-		((DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) (BRAZO ?br)
+		( (loc-dron ?d ?x) (loc-transportador ?t ?x) 
 			(CONTENIDO ?cont) (contenido-brazo ?br ?cont) 
 			(contenido-transportador ?t ?cont ?ncontT)
 			(capacidad-actual-transportador ?t ?cap)
@@ -40,7 +40,7 @@
 	)
 	
 	(:operator(!descargar-transportador ?d ?br ?t ?x)
-		( (DRON ?d) (TRANSPORTADOR ?t) (LOC ?x) (loc-dron ?d ?x) (loc-transportador ?t ?x) 
+		(   (loc-dron ?d ?x) (loc-transportador ?t ?x) 
 			(CONTENIDO ?cont) (brazo-dron-free ?d ?br) 
 			(contenido-transportador ?t ?cont ?ncontT) (call > ?ncontT 0) 
 			(capacidad-actual-transportador ?t ?cap)
