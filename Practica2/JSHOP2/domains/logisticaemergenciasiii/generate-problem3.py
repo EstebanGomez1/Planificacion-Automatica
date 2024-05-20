@@ -158,15 +158,24 @@ def main():
     parser.add_argument('-l', '--locations', metavar='NUM', type=int, dest='locations',
                       help='the number of locations apart from the depot ')
     parser.add_argument('-p', '--persons', metavar='NUM', type=int, dest='persons', help='the number of persons')
-    parser.add_argument('-c', '--crates', metavar='NUM', type=int, dest='crates', help='the number of crates available')
-    parser.add_argument('-g', '--goals', metavar='NUM', type=int, dest='goals', help='the number of crates assigned in the goal')
+    #  parser.add_argument('-c', '--crates', metavar='NUM', type=int, dest='crates', help='the number of crates available')
+    #parser.add_argument('-g', '--goals', metavar='NUM', type=int, dest='goals', help='the number of crates assigned in the goal')
     parser.add_argument('--cap', metavar='NUM', type=str, dest='cap', help='the number of capacidades separated by commas')
+    parser.add_argument('--cloc', metavar='NUM', type=str, dest='cloc', help='the number of capacidades separated by commas')
     args = parser.parse_args()
 
-    cap_list = args.cap.split(',')
+    
+
     if args.cap is None:
         print("Especifique las capacidades de los transportadores por favor, opcion --cap")
         sys.exit(1)
+    cap_list = args.cap.split(',')
+
+    if args.cloc is None:
+        print("Especifique los lugares que necesiten cajas por favor, opcion --cloc")
+        sys.exit(1)
+    loc_list = args.cloc.split(',')
+
     
     if args.drones is None:
         print("You must specify --drones (use --help for help)")
@@ -184,38 +193,22 @@ def main():
         print("You must specify --persons (use --help for help)")
         sys.exit(1)
 
-    if args.crates is None:
-        print("You must specify --crates (use --help for help)")
-        sys.exit(1)
-
-    if args.goals is None:
-        print("You must specify --goals (use --help for help)")
-        sys.exit(1)
-
-    if args.goals > args.crates:
-        print("Cannot have more goals than crates")
-        sys.exit(1)
 
     content_types = ["comida", "medicina"]
 
-    if len(content_types) > args.crates:
-        print("Cannot have more content types than crates:", content_types)
-        sys.exit(1)
-
-    if args.goals > len(content_types) * args.persons:
-        print("For", args.persons, "persons, you can have at most", len(content_types) * args.persons, "goals")
-        sys.exit(1)
 
     if (args.carriers != len(cap_list)):
         print("numero distinto de capacidades y transportadores")
+        sys.exit(1)
+
+    if (args.locations != len(loc_list)):
+        print("numero distinto de sitios y locs que necesiten contenido")
         sys.exit(1)
 
     print("Drones\t\t", args.drones)
     print("Carriers\t", args.carriers)
     print("Locations\t", args.locations)
     print("Persons\t\t", args.persons)
-    print("Crates\t\t", args.crates)
-    print("Goals\t\t", args.goals)
 
     dron = []
     persona = []
@@ -224,6 +217,7 @@ def main():
     loc = []
     
 
+  
     y=65
     loc.append("deposito")
     for x in range(args.locations):
@@ -234,11 +228,9 @@ def main():
         carrier.append("t" + str(x + 1))
     for x in range(args.persons):
         persona.append("persona" + str(x + 0))
-    for x in range(args.crates):
-        caja.append("caja" + str(x + 1))
     
     # Define a problem name
-    problem_name = "problem"+str(args.goals)+"metas"
+    problem_name = "problem"+str(args.carriers)+"tr"+str(args.locations)+"locs"
 
     # Open output file
     with open(problem_name, 'w') as f:
@@ -276,6 +268,7 @@ def main():
                 for y in content_types:
                     f.write("\t\t(contenido-transportador " + x + " " + y + " 0)\n")
             k+=1
+        f.write("\n")
 
         lista = []
         totalcomida = 0
@@ -284,21 +277,17 @@ def main():
         for i in range(len(loc)+1):
             lista.append(0)
         
-        for x in range(args.goals):
-            cajasporintento = math.ceil(len(caja)//(args.goals))
+        l = 1
+        for x in loc_list:
+            cajasporintento = int(x)
             cajascomida = random.randint(1,cajasporintento)
             cajasmedicina = cajasporintento-cajascomida
-            l = random.randint(1,len(loc))
+            totalcomida+= cajascomida
+            totalmedicina+= cajasmedicina    
             f.write("\t\t(loc-necesita-contenido Loc" + str(l) + " comida " + str(cajascomida) + ")\n") 
-            lista[l]=lista[l]+cajascomida
-            totalcomida += cajascomida
-            f.write("\t\t(loc-necesita-contenido Loc" + str(l) + " medicina " + str(cajasmedicina) + ")\n") 
-            lista[l]=lista[l]+cajasmedicina  
-            totalmedicina += cajasmedicina    
-
-        for i in range(len(lista)):
-            if(lista[i]!=0):
-                f.write("\t\t(loc-necesita Loc" + str(i) + " " + str(lista[i]) + ")\n")
+            f.write("\t\t(loc-necesita-contenido Loc" + str(l) + " medicina " + str(cajasmedicina) + ")\n")   
+            f.write("\t\t(loc-necesita Loc" + str(l) + " " + str(x)+ ")\n") 
+            l+=1
         
         f.write(f"\t\t(cantidad-cajas comida {totalcomida+10})\n")
         f.write(f"\t\t(cantidad-cajas medicina {totalmedicina+10})\n")
